@@ -9,8 +9,13 @@ public interface EnrollmentRepository extends CrudRepository<Enrollment, Integer
 
     // TODO uncomment the following lines as needed
 
-//    @Query("select e from Enrollment e where e.section.sectionNo=:sectionNo order by e.student.name")
-//    List<Enrollment> findEnrollmentsBySectionNoOrderByStudentName(int sectionNo);
+   @Query("select e from Enrollment e where e.section.sectionNo=:sectionNo order by e.student.name")
+   List<Enrollment> findEnrollmentsBySectionNoOrderByStudentName(int sectionNo);
+
+   // Possible Put Method
+//    @Query("insert into Enrollment (student_id, section_id, grade) values (:studentId, :sectionId, :grade)")
+//    void insertEnrollment(int studentId, int sectionId, String grade);
+
 //
 //    @Query("select e from Enrollment e where e.student.id=:studentId order by e.section.term.termId")
 //    List<Enrollment> findEnrollmentsByStudentIdOrderByTermId(int studentId);

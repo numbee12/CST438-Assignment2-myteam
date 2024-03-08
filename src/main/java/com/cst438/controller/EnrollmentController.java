@@ -1,6 +1,8 @@
 package com.cst438.controller;
 
 
+import com.cst438.domain.Enrollment;
+import com.cst438.domain.EnrollmentRepository;
 import com.cst438.dto.EnrollmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,9 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class EnrollmentController {
 
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+
     // instructor downloads student enrollments for a section, ordered by student name
     // user must be instructor for the section
     @GetMapping("/sections/{sectionNo}/enrollments")
@@ -23,7 +28,12 @@ public class EnrollmentController {
         // TODO
 		//  hint: use enrollment repository findEnrollmentsBySectionNoOrderByStudentName method
         //  remove the following line when done
-        return null;
+        List<Enrollment> enrollmentList = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(sectionNo);
+        List<EnrollmentDTO> dto_list = new ArrayList<EnrollmentDTO>();
+        for (Enrollment enrollment : enrollmentList) {
+            dto_list.add(new EnrollmentDTO(enrollment));
+        }
+        return dto_list;
     }
 
     // instructor uploads enrollments with the final grades for the section
