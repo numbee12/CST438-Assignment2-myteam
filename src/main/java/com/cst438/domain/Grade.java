@@ -11,7 +11,7 @@ public class Grade {
  
     // TODO complete this class
     // add additional attribute for score
-    private int score;
+    private Integer score;
 
     // add relationship between grade and assignment entities
     @ManyToOne
