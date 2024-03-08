@@ -10,14 +10,16 @@ public class Enrollment {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="enrollment_id")
     private int enrollment_id;
-    @OneToMany(mappedBy = "enrollment")
-    List<String> grade;
+    // @OneToMany(mappedBy = "enrollment")
+    // List<String> grade;
+    @Column(name="grade")
+    private String grade;
     @ManyToOne
-    @JoinColumn(name="user_id")
-    private int user_id;
+    @JoinColumn(name="user_id", nullable=false)
+    private User student;
     @ManyToOne
-    @JoinColumn(name="section_no")
-    private int section_no;
+    @JoinColumn(name="section_no", nullable=false)
+    private Section section;
 	
 	// TODO complete this class
     // add additional attribute for grade
@@ -27,9 +29,9 @@ public class Enrollment {
 
 
     public void setGrade(String grade) {
-        this.grade.add(grade);
+        this.grade = grade;
     }
-    public List<String> getGrade() {
+    public String getGrade() {
         return grade;
     }
     public void setEnrollmentId(int enrollmentId) {
@@ -38,16 +40,16 @@ public class Enrollment {
     public int getEnrollmentId() {
         return enrollment_id;
     }
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setStudent(User student) {
+        this.student = student;
     }
-    public int getUser_id() {
-        return user_id;
+    public User getStudent() {
+        return student;
     }
-    public void setSection_no(int section_no) {
-        this.section_no = section_no;
+    public void setSection(Section section) {
+        this.section = section;
     }
-    public int getSection_no() {
-        return section_no;
+    public Section getSection() {
+        return section;
     }
 }

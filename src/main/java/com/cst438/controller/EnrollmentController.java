@@ -31,7 +31,22 @@ public class EnrollmentController {
         List<Enrollment> enrollmentList = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(sectionNo);
         List<EnrollmentDTO> dto_list = new ArrayList<EnrollmentDTO>();
         for (Enrollment enrollment : enrollmentList) {
-            dto_list.add(new EnrollmentDTO(enrollment));
+            dto_list.add(new EnrollmentDTO(
+                enrollment.getEnrollmentId(),
+                enrollment.getGrade(),
+                enrollment.getStudent().getId(),
+                enrollment.getStudent().getName(),
+                enrollment.getStudent().getEmail(),
+                enrollment.getSection().getCourse().getCourseId(),
+                enrollment.getSection().getSecId(),
+                enrollment.getSection().getSectionNo(),
+                enrollment.getSection().getBuilding(),
+                enrollment.getSection().getRoom(),
+                enrollment.getSection().getTimes(),
+                enrollment.getSection().getCourse().getCredits(),
+                enrollment.getSection().getTerm().getYear(),
+                enrollment.getSection().getTerm().getSemester()
+            ));
         }
         return dto_list;
     }
