@@ -9,7 +9,7 @@ public class Enrollment {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="enrollment_id")
-    private int enrollment_id;
+    private int enrollmentId;
     // @OneToMany(mappedBy = "enrollment")
     // List<String> grade;
     @Column(name="grade")
@@ -35,10 +35,10 @@ public class Enrollment {
         return grade;
     }
     public void setEnrollmentId(int enrollmentId) {
-        this.enrollment_id = enrollmentId;
+        this.enrollmentId = enrollmentId;
     }
     public int getEnrollmentId() {
-        return enrollment_id;
+        return enrollmentId;
     }
     public void setStudent(User student) {
         this.student = student;
