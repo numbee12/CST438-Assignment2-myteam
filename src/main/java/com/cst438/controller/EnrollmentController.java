@@ -61,7 +61,18 @@ public class EnrollmentController {
         // For each EnrollmentDTO in the list
         //  find the Enrollment entity using enrollmentId
         //  update the grade and save back to database
+    
+        for (EnrollmentDTO eDTO : dlist) {
+            Enrollment e = enrollmentRepository
+                            .findById(eDTO.enrollmentId())
+                            .orElse(null);
 
+            if (e == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found " + eDTO.enrollmentId());
+            }
+            e.setGrade(eDTO.grade());
+            enrollmentRepository.save(e);
+        }
     }
 
 }
