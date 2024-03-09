@@ -17,5 +17,7 @@ public interface AssignmentRepository extends CrudRepository<Assignment, Integer
             " e.student.id=:studentId order by a.dueDate")
     List<Assignment> findByStudentIdAndYearAndSemesterOrderByDueDate(int studentId, int year, String semester);
 
+    @Query("select a.section.sectionNo from Assignment a where a.assignmentId=:assignmentId")
+    Integer findSectionNoByAssignmentId(int assignmentId);
 
 }

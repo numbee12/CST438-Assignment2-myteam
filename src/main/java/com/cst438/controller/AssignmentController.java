@@ -30,6 +30,8 @@ public class AssignmentController {
     private CourseRepository courseRepository;
     @Autowired
     private GradeRepository gradeRepository;
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
 
     // instructor lists assignments for a section.  Assignments ordered by due date.
@@ -123,17 +125,51 @@ public class AssignmentController {
 
         // instructor gets grades for assignment ordered by student name
         // user must be instructor for the section
+        //
+        // TODO remove the following line when done
+        // get the list of enrollments for the section related to this assignment.
+        // hint: use te enrollment repository method findEnrollmentsBySectionOrderByStudentName.
+        // for each enrollment, get the grade related to the assignment and enrollment
+        //   hint: use the gradeRepository findByEnrollmentIdAndAssignmentId method.
+        //   if the grade does not exist, create a grade entity and set the score to NULL
+        //   and then save the new entity
         @GetMapping("/assignments/{assignmentId}/grades")
         public List<GradeDTO> getAssignmentGrades ( @PathVariable("assignmentId") int assignmentId){
 
-            // TODO remove the following line when done
-            // get the list of enrollments for the section related to this assignment.
-            // hint: use te enrollment repository method findEnrollmentsBySectionOrderByStudentName.
-            // for each enrollment, get the grade related to the assignment and enrollment
-            //   hint: use the gradeRepository findByEnrollmentIdAndAssignmentId method.
-            //   if the grade does not exist, create a grade entity and set the score to NULL
-            //   and then save the new entity
-            return null;
+//        int sectionNo = assignmentRepository.findSectionNoByAssignmentId(assignmentId);
+            Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
+            if(a==null){
+                throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "not found");
+            }
+
+            List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(a.getSection().getSectionNo());
+            List<GradeDTO> assignmentGrades = new ArrayList<>();
+
+            for (Enrollment enrollment : enrollments) {
+                Grade grade = gradeRepository.findByEnrollmentIdAndAssignmentId(enrollment.getEnrollmentId(), assignmentId);
+
+                if (grade == null) {
+//                    grade = new Grade();
+//                    grade.setGradeId(grade.getGradeId());
+//                    grade.setScore(null);
+//                    grade.setGradeId(grade.getGradeId());
+//                    grade.setAssignment(grade.getAssignment());
+//                    gradeRepository.save(grade);
+                    return null;
+                }
+
+
+                    GradeDTO gradeDTO = new GradeDTO(
+                        grade.getGradeId(),
+                        enrollment.getStudent().getName(),
+                        enrollment.getStudent().getEmail(),
+                        grade.getAssignment().getTitle(),
+                        grade.getAssignment().getSection().getCourse().getCourseId(),
+                        grade.getAssignment().getSection().getSecId(),
+                        grade.getScore());
+                    assignmentGrades.add(gradeDTO);
+            }
+            return assignmentGrades;
         }
 
         // instructor uploads grades for assignment
@@ -142,7 +178,7 @@ public class AssignmentController {
         public void updateGrades (@RequestBody List <GradeDTO> dlist) {
             // TODO
             // for each grade in the GradeDTO list, retrieve the grade entity
-            // update the score and save the entitygit c
+            // update the score and save the entity
         }
 
         // student lists their assignments/grades for an enrollment ordered by due date
@@ -153,10 +189,9 @@ public class AssignmentController {
         @RequestParam("year") int year,
         @RequestParam("semester") String semester){
 
-            // TODO return a list of assignments and (if they exist) the assignment grade*******
-
-            //  for all sections that the student is enrolled for the given year and semester
-            //  hint: use the assignment repository method findByStudentIdAndYearAndSemesterOrderByDueDate
+            // TODO return a list of assignments and (if they exist) the assignment grade*****
+            // for all sections that the student is enrolled for the given year and semester
+            // hint: use the assignment repository method findByStudentIdAndYearAndSemesterOrderByDueDate
 
             List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(studentId,year,semester);
 

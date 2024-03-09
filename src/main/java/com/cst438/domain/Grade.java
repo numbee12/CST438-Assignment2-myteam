@@ -33,11 +33,11 @@ public class Grade {
         this.gradeId = gradeId;
     }
 
-    public int getScore() {
+    public Integer getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Integer score) {
         this.score = score;
     }
 
