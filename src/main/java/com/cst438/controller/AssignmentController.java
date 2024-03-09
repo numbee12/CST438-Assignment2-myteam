@@ -142,13 +142,7 @@ public class AssignmentController {
         public void updateGrades (@RequestBody List <GradeDTO> dlist) {
             // TODO
             // for each grade in the GradeDTO list, retrieve the grade entity
-            // update the score and save the entity
-//            for(GradeDTO gradeDTO : dlist ){
-//                int gradeId= gradeDTO.gradeId();
-//                Grade g = gradeRepository.findById(gradeDTO.gradeId());
-//                g.setScore(gradeDTO.getScore());
-//                gradeRepository.save(g);
-//            }
+            // update the score and save the entitygit c
         }
 
         // student lists their assignments/grades for an enrollment ordered by due date
