@@ -23,7 +23,7 @@ public class Assignment {
 
     // add getter and setter methods
     public int getAssignmentId(){return assignmentId;}
-    public void setAssignmentId(int assignmentId){this.assignmentId= assignmentId;}
+    public static void setAssignmentId(int assignmentId){this.assignmentId= assignmentId;}
     public String getTitle(){return title;}
     public void setTitle(String title){this.title = title;}
     public String getDueDate(){return dueDate;}
