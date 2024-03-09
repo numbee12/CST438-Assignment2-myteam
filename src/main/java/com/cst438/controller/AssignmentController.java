@@ -140,6 +140,8 @@ public class AssignmentController {
             Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
             if(a==null){
                 throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "not found");
+
+
             }
 
             List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(a.getSection().getSectionNo());
