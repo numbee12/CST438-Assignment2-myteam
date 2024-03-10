@@ -222,7 +222,7 @@ public class StudentController {
                if (e != null) {
                    enrollmentRepository.delete(e);
                }
-               //code else messages
+               //code else message
            }
        }
    }
