@@ -133,31 +133,38 @@ public class StudentController {
         //check that user exists
         User u = userRepository.findById(studentId).orElse(null);
         if (u == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
         }
         //user must be a student    
          if ( u.getType().compareTo("STUDENT") != 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user is not a student" + u.getType());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
         }
         Section s = sectionRepository.findById(sectionNo).orElse(null);
         if (s == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section No is not for a valid section");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "section No is not for a valid section");
         }
+
         // check that today is between addDate and addDead line for the section
         Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
+
+        if (t== null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "term does not exist");
+        }
+
         LocalDate addDateLD = t.getAddDate().toLocalDate();
         LocalDate addDeadLineLD = t.getAddDeadline().toLocalDate();
         if(LocalDate.now().compareTo(addDateLD)<0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "today is not after the add Date");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is not after the add Date");
         }
         if ( LocalDate.now().compareTo(addDeadLineLD)>0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "today is after the Drop Deadline ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is after the Drop Deadline ");
         }
         // check that student is not already enrolled into this section
         Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
         if(existing != null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "this student is already enrolled in this section ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "this student is already enrolled in this section ");
         }
+
         // create a new enrollment entity and save.  The enrollment grade will
         // be NULL until instructor enters final grades for the course.
         Enrollment e = new Enrollment();
@@ -166,7 +173,6 @@ public class StudentController {
         e.setSection(s);
 
         enrollmentRepository.save(e);
-
 
         return new EnrollmentDTO(
                 e.getEnrollmentId(),
@@ -184,7 +190,6 @@ public class StudentController {
                 e.getSection().getTerm().getYear(),
                 e.getSection().getTerm().getSemester()
         );
-
     }
 
     // student drops a course
@@ -198,41 +203,39 @@ public class StudentController {
        //retrieve enrollment by Id
        Enrollment e = enrollmentRepository.findById(enrollmentId).orElse(null);
        if(e == null){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "invalid enrollment id");
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid enrollment id");
        }
 
        //retrieve section by section number in enrollment
        Section s = sectionRepository.findById(e.getSection().getSectionNo()).orElse(null);
        if (s == null) {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "sectionNo not a valid section number");
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sectionNo not a valid section number");
        }
 
        //retrieve term in section
        Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
        if (t == null) {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "invalid term");
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid term");
        }
 
        //retrieve user by getting student ID if user is a student, set to null is not student
        User u = userRepository.findById(e.getStudent().getId()).orElse(null);
 
+       if(u == null){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid user id");
+       }
+
        if(!u.getType().equals("STUDENT")){
            u = null;
-       }
-       if(u == null){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "invalid user id or user is not a student");
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid user id or user is not a student");
        }
 
        // check that today is not after the dropDeadline for section
        LocalDate dropDeadlineLD = t.getDropDeadline().toLocalDate();
 
        if(LocalDate.now().compareTo(dropDeadlineLD)>0) {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "today is after the drop deadline");
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is after the drop deadline");
        }
-
-//       if (e != null) {
-               enrollmentRepository.delete(e);
-//       }
-
+        enrollmentRepository.delete(e);
    }
 }
