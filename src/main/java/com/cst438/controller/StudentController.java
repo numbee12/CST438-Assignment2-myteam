@@ -16,6 +16,12 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class StudentController {
 
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
 
    // student gets transcript showing list of all enrollments
    // studentId will be temporary until Login security is implemented
@@ -72,10 +78,29 @@ public class StudentController {
 
     // student drops a course
     // user must be student
+
+    //this will be the logged in user? Is this for future use after login / pwd is implemented?
+
    @DeleteMapping("/enrollments/{enrollmentId}")
    public void dropCourse(@PathVariable("enrollmentId") int enrollmentId) {
 
        // TODO
+
        // check that today is not after the dropDeadline for section
+       //not sure how to do this, can't find dropDeadline in any of the DTOs, is there somewhere else to look?
+
+       //retrieve enrollment by Id
+       Enrollment e = enrollmentRepository.findById(enrollmentId).orElse(null);
+
+       //retrieve user by getting student ID if user is a student, set to null is not student
+       //not sure if this is what prof is asking for above, or if user type validation is for later when login is implemented
+       User u = userRepository.findById(e.getStudent().getId()).orElse(null);
+
+
+       if(u!= null) {
+           if (e != null) {
+               enrollmentRepository.delete(e);
+           }
+       }
    }
 }
