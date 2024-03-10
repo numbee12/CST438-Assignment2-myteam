@@ -33,6 +33,7 @@ public class EnrollmentController {
         List<EnrollmentDTO> dto_list = new ArrayList<EnrollmentDTO>();
         for (Enrollment enrollment : enrollmentList) {
 
+            // FIXME:
             // Below is the user validation code:
             // Keeping it commented out for now until we figure out how to test it.
             // Note: I think User reference in Entitity.java class should be named
@@ -84,7 +85,7 @@ public class EnrollmentController {
             if (e == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found " + eDTO.enrollmentId());
             }
-
+            // FIXME:
             // Below is the user validation code:
             // Keeping it commented out for now until we figure out how to test it.
             // Note: I think User reference in Entitity.java class should be named

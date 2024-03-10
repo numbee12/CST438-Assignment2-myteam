@@ -35,7 +35,37 @@ public class StudentController {
        // user must be a student
 	   // hint: use enrollment repository method findEnrollmentByStudentIdOrderByTermId
        // remove the following line when done
-       return null;
+       List<EnrollmentDTO> transcript = new ArrayList<EnrollmentDTO>();
+       List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsByStudentIdOrderByTermId(studentId);
+       for (Enrollment e : enrollments) {
+
+            // FIXME: is this the right way to see if user is a student?
+            
+           if (!e.getStudent().getType().equals("STUDENT")) {
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
+           } else if (studentId != e.getStudent().getId()) {
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "student id does not match");
+           }
+           transcript.add(
+                new EnrollmentDTO(
+                    e.getEnrollmentId(),
+                    e.getGrade(),
+                    e.getStudent().getId(),
+                    e.getStudent().getName(),
+                    e.getStudent().getEmail(),
+                    e.getSection().getCourse().getCourseId(),
+                    e.getSection().getSecId(),
+                    e.getSection().getSectionNo(),
+                    e.getSection().getBuilding(),
+                    e.getSection().getRoom(),
+                    e.getSection().getTimes(),
+                    e.getSection().getCourse().getCredits(),
+                    e.getSection().getTerm().getYear(),
+                    e.getSection().getTerm().getSemester()
+                )
+            );
+       }
+       return transcript;
    }
 
     // student gets a list of their enrollments for the given year, semester
