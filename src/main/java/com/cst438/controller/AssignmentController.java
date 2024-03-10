@@ -174,11 +174,26 @@ public class AssignmentController {
 
         // instructor uploads grades for assignment
         // user must be instructor for the section
+
         @PutMapping("/grades")
         public void updateGrades (@RequestBody List <GradeDTO> dlist) {
             // TODO
             // for each grade in the GradeDTO list, retrieve the grade entity
             // update the score and save the entity
+            for (GradeDTO dto : dlist) {
+                Grade g = gradeRepository.findById(dto.gradeId()).orElse(null);
+                if (g == null) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "dto not found " + dto.courseId());
+                } else {
+                    g.setScore(dto.score());
+                    gradeRepository.save(g);
+//                    return new GradeDTO(
+//                            g.getGradeId(),
+//                            g.getScore(),
+//                            g.getAssignment(),
+//                            g.getAssignment()
+                }
+            }
         }
 
         // student lists their assignments/grades for an enrollment ordered by due date

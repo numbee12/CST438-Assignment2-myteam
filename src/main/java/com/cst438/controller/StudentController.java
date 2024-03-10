@@ -78,10 +78,38 @@ public class StudentController {
            @RequestParam("studentId") int studentId) {
 
 
-     // TODO
-	 //  hint: use enrollment repository method findByYearAndSemesterOrderByCourseId
-     //  remove the following line when done
-       return null;
+       // TODO
+       //  hint: use enrollment repository method findByYearAndSemesterOrderByCourseId
+       //  remove the following line when done
+       List<EnrollmentDTO> schedule = new ArrayList<>();
+       List<Enrollment> enrollments = enrollmentRepository.findByYearAndSemesterOrderByCourseId(year, semester, studentId);
+       for (Enrollment e : enrollments) {
+
+           if (!e.getStudent().getType().equals("STUDENT")) {
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
+           } else if (studentId != e.getStudent().getId()) {
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "student id does not match");
+           }
+           schedule.add(
+                   new EnrollmentDTO(
+                           e.getEnrollmentId(),
+                           e.getGrade(),
+                           e.getStudent().getId(),
+                           e.getStudent().getName(),
+                           e.getStudent().getEmail(),
+                           e.getSection().getCourse().getCourseId(),
+                           e.getSection().getSecId(),
+                           e.getSection().getSectionNo(),
+                           e.getSection().getBuilding(),
+                           e.getSection().getRoom(),
+                           e.getSection().getTimes(),
+                           e.getSection().getCourse().getCredits(),
+                           e.getSection().getTerm().getYear(),
+                           e.getSection().getTerm().getSemester()
+                   )
+           );
+       }
+       return schedule;
    }
 
 
@@ -102,8 +130,8 @@ public class StudentController {
         // be NULL until instructor enters final grades for the course.
 
         // remove the following line when done.
-        return null;
 
+        return null;
     }
 
     // student drops a course
