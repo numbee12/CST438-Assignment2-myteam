@@ -73,54 +73,61 @@ public class StudentController {
 
         // TODO
 
+        //check that user exists
         User u = userRepository.findById(studentId).orElse(null);
-        if(u!= null){
-            if( u.getType()!= "STUDENT"){
-                //code error message for user is not student
-            } else {
-                // check that the Section entity with primary key sectionNo exists
-                Section s = sectionRepository.findById(sectionNo).orElse(null);
-                if(s != null){
-                    // check that today is between addDate and addDead line for the section
-                    Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
-                    LocalDate addDateLD = t.getAddDate().toLocalDate();
-                    LocalDate addDeadLineLD = t.getAddDeadline().toLocalDate();
-                    if(LocalDate.now().compareTo(addDateLD)>0  && LocalDate.now().compareTo(addDeadLineLD)<0) {
-                        // check that student is not already enrolled into this section
-                        Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
-                        if(existing == null){
-                            // create a new enrollment entity and save.  The enrollment grade will
-                            // be NULL until instructor enters final grades for the course.
-                            Enrollment e = new Enrollment();
-                            e.setGrade(null);
-                            e.setStudent(u);
-
-                            //////where I am at- trying to figure out how to set all the DTO fields from the object setters
-
-
-
-                        } else {
-                            //code message for student already enrolled in section
-                        }
-
-                    }
-
-
-
-                    //code message for s is null
-                }
-            }
-
-            //code message for u is null
+        if (u == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
         }
+        //user must be a student    
+         if ( u.getType().compareTo("STUDENT") != 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user is not a student" + u.getType());
+        }
+        Section s = sectionRepository.findById(sectionNo).orElse(null);
+        if (s == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section No is not for a valid section");
+        }
+        // check that today is between addDate and addDead line for the section
+        Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
+        LocalDate addDateLD = t.getAddDate().toLocalDate();
+        LocalDate addDeadLineLD = t.getAddDeadline().toLocalDate();
+        if(LocalDate.now().compareTo(addDateLD)<0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "today is not after the add Date");
+        }
+        if ( LocalDate.now().compareTo(addDeadLineLD)>0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "today is after the Drop Deadline ");
+        }
+        // check that student is not already enrolled into this section
+        Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
+        if(existing != null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "this student is already enrolled in this section ");
+        }
+        // create a new enrollment entity and save.  The enrollment grade will
+        // be NULL until instructor enters final grades for the course.
+        Enrollment e = new Enrollment();
+        e.setGrade(null);
+        e.setStudent(u);
+        e.setSection(s);
 
-
-
-
-
+        enrollmentRepository.save(e);
 
         // remove the following line when done.
-        return null;
+//        return null;
+        return new EnrollmentDTO(
+                e.getEnrollmentId(),
+                e.getGrade(),
+                e.getStudent().getId(),
+                e.getStudent().getName(),
+                e.getStudent().getEmail(),
+                e.getSection().getCourse().getCourseId(),
+                e.getSection().getSecId(),
+                e.getSection().getSectionNo(),
+                e.getSection().getBuilding(),
+                e.getSection().getRoom(),
+                e.getSection().getTimes(),
+                e.getSection().getCourse().getCredits(),
+                e.getSection().getTerm().getYear(),
+                e.getSection().getTerm().getSemester()
+        );
 
     }
 
