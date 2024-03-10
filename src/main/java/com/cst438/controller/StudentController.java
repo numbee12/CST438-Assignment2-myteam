@@ -9,8 +9,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.ToDoubleBiFunction;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -21,6 +23,12 @@ public class StudentController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    SectionRepository sectionRepository;
+
+    @Autowired
+    TermRepository termRepository;
 
 
    // student gets transcript showing list of all enrollments
@@ -65,11 +73,51 @@ public class StudentController {
 
         // TODO
 
-        // check that the Section entity with primary key sectionNo exists
-        // check that today is between addDate and addDeadline for the section
-        // check that student is not already enrolled into this section
-        // create a new enrollment entity and save.  The enrollment grade will
-        // be NULL until instructor enters final grades for the course.
+        User u = userRepository.findById(studentId).orElse(null);
+        if(u!= null){
+            if( u.getType()!= "STUDENT"){
+                //code error message for user is not student
+            } else {
+                // check that the Section entity with primary key sectionNo exists
+                Section s = sectionRepository.findById(sectionNo).orElse(null);
+                if(s != null){
+                    // check that today is between addDate and addDead line for the section
+                    Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
+                    LocalDate addDateLD = t.getAddDate().toLocalDate();
+                    LocalDate addDeadLineLD = t.getAddDeadline().toLocalDate();
+                    if(LocalDate.now().compareTo(addDateLD)>0  && LocalDate.now().compareTo(addDeadLineLD)<0) {
+                        // check that student is not already enrolled into this section
+                        Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
+                        if(existing == null){
+                            // create a new enrollment entity and save.  The enrollment grade will
+                            // be NULL until instructor enters final grades for the course.
+                            Enrollment e = new Enrollment();
+                            e.setGrade(null);
+                            e.setStudent(u);
+
+                            //////where I am at- trying to figure out how to set all the DTO fields from the object setters
+
+
+
+                        } else {
+                            //code message for student already enrolled in section
+                        }
+
+                    }
+
+
+
+                    //code message for s is null
+                }
+            }
+
+            //code message for u is null
+        }
+
+
+
+
+
 
         // remove the following line when done.
         return null;
@@ -84,22 +132,31 @@ public class StudentController {
    @DeleteMapping("/enrollments/{enrollmentId}")
    public void dropCourse(@PathVariable("enrollmentId") int enrollmentId) {
 
-       // TODO
-
        // check that today is not after the dropDeadline for section
        //not sure how to do this, can't find dropDeadline in any of the DTOs, is there somewhere else to look?
 
        //retrieve enrollment by Id
        Enrollment e = enrollmentRepository.findById(enrollmentId).orElse(null);
 
-       //retrieve user by getting student ID if user is a student, set to null is not student
+       //retrieve section by section number in enrollment
+       Section s = sectionRepository.findById(e.getSection().getSectionNo()).orElse(null);
+
+       //retrieve term in section
+       Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
+
+        //retrieve user by getting student ID if user is a student, set to null is not student
        //not sure if this is what prof is asking for above, or if user type validation is for later when login is implemented
        User u = userRepository.findById(e.getStudent().getId()).orElse(null);
 
-
        if(u!= null) {
-           if (e != null) {
-               enrollmentRepository.delete(e);
+           LocalDate dropDeadlineLD = t.getDropDeadline().toLocalDate();
+
+           if (dropDeadlineLD != LocalDate.now()) {
+
+               if (e != null) {
+                   enrollmentRepository.delete(e);
+               }
+               //code else messages
            }
        }
    }
