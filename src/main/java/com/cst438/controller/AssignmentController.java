@@ -69,7 +69,7 @@ public class AssignmentController {
         a.setTitle(assignmentDTO.title());
         a.setDueDate(assignmentDTO.dueDate());
 
-        Section section = sectionRepository.findById(assignmentDTO.secId()).orElse(null);
+        Section section = sectionRepository.findById(assignmentDTO.secNo()).orElse(null);
 
         if (section != null) {
             a.setSection(section);
