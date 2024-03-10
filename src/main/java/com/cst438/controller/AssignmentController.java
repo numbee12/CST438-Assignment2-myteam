@@ -70,11 +70,9 @@ public class AssignmentController {
         a.setDueDate(assignmentDTO.dueDate());
 
         Section section = sectionRepository.findById(assignmentDTO.secId()).orElse(null);
-        Course course = courseRepository.findById(assignmentDTO.courseId()).orElse(null);
 
-        if (section != null && course != null) {
+        if (section != null) {
             a.setSection(section);
-            section.setCourse(course);
             assignmentRepository.save(a);
 
             return new AssignmentDTO(
