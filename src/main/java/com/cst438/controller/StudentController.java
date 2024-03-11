@@ -135,10 +135,7 @@ public class StudentController {
         if (u == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
         }
-        //user must be a student    
-         if ( u.getType().compareTo("STUDENT") != 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
-        }
+
         Section s = sectionRepository.findById(sectionNo).orElse(null);
         if (s == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "section No is not for a valid section");
@@ -147,7 +144,7 @@ public class StudentController {
         // check that today is between addDate and addDead line for the section
         Term t = termRepository.findById(s.getTerm().getTermId()).orElse(null);
 
-        if (t== null){
+        if (t == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "term does not exist");
         }
 
@@ -223,11 +220,6 @@ public class StudentController {
 
        if(u == null){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid user id");
-       }
-
-       if(!u.getType().equals("STUDENT")){
-           u = null;
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid user id or user is not a student");
        }
 
        // check that today is not after the dropDeadline for section
