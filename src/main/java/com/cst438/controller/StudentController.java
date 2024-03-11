@@ -154,7 +154,7 @@ public class StudentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is not after the add Date");
         }
         if ( LocalDate.now().compareTo(addDeadLineLD)>0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is after the Drop Deadline ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is after the Add Deadline ");
         }
         // check that student is not already enrolled into this section
         Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
