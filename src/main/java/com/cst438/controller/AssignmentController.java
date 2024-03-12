@@ -190,11 +190,6 @@ public class AssignmentController {
                 } else {
                     g.setScore(dto.score());
                     gradeRepository.save(g);
-//                    return new GradeDTO(
-//                            g.getGradeId(),
-//                            g.getScore(),
-//                            g.getAssignment(),
-//                            g.getAssignment()
                 }
             }
         }
