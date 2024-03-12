@@ -26,9 +26,6 @@ public class EnrollmentController {
     public List<EnrollmentDTO> getEnrollments(
             @PathVariable("sectionNo") int sectionNo ) {
 
-        // TODO
-		//  hint: use enrollment repository findEnrollmentsBySectionNoOrderByStudentName method
-        //  remove the following line when done
         List<Enrollment> enrollmentList = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(sectionNo);
         List<EnrollmentDTO> dto_list = new ArrayList<EnrollmentDTO>();
         for (Enrollment enrollment : enrollmentList) {
@@ -36,8 +33,6 @@ public class EnrollmentController {
             // FIXME:
             // Below is the user validation code:
             // Keeping it commented out for now until we figure out how to test it.
-            // Note: I think User reference in Entitity.java class should be named
-            // as "user" not "student" (refactor?).
 
             // User user = enrollment.getStudent();
             // if (!user.getType().equals("INSTRUCTOR")) {
@@ -70,12 +65,6 @@ public class EnrollmentController {
     // user must be instructor for the section
     @PutMapping("/enrollments")
     public void updateEnrollmentGrade(@RequestBody List<EnrollmentDTO> dlist) {
-
-        // TODO
-
-        // For each EnrollmentDTO in the list
-        //  find the Enrollment entity using enrollmentId
-        //  update the grade and save back to database
     
         for (EnrollmentDTO eDTO : dlist) {
             Enrollment e = enrollmentRepository
@@ -88,8 +77,6 @@ public class EnrollmentController {
             // FIXME:
             // Below is the user validation code:
             // Keeping it commented out for now until we figure out how to test it.
-            // Note: I think User reference in Entitity.java class should be named
-            // as "user" not "student" (refactor?).
 
             // User user = e.getStudent();
             // if (!user.getType().equals("INSTRUCTOR")) {

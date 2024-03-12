@@ -8,9 +8,7 @@ public class Grade {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="grade_id")
     private int gradeId;
- 
-    // TODO complete this class
-    // add additional attribute for score
+
     private Integer score;
 
     // add relationship between grade and assignment entities

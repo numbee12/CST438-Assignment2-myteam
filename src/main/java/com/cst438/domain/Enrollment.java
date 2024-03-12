@@ -20,13 +20,6 @@ public class Enrollment {
     @ManyToOne
     @JoinColumn(name="section_no", nullable=false)
     private Section section;
-	
-	// TODO complete this class
-    // add additional attribute for grade
-    // create relationship between enrollment and user entities
-    // create relationship between enrollment and section entities
-    // add getter/setter methods
-
 
     public void setGrade(String grade) {
         this.grade = grade;

@@ -36,13 +36,6 @@ public class StudentController {
    //example URL  /transcript?studentId=19803
    @GetMapping("/transcripts")
    public List<EnrollmentDTO> getTranscript(@RequestParam("studentId") int studentId) {
-
-       // TODO
-
-       // list course_id, sec_id, title, credit, grade in chronological order
-       // user must be a student
-	   // hint: use enrollment repository method findEnrollmentByStudentIdOrderByTermId
-       // remove the following line when done
        List<EnrollmentDTO> transcript = new ArrayList<EnrollmentDTO>();
        List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsByStudentIdOrderByTermId(studentId);
        for (Enrollment e : enrollments) {
@@ -85,10 +78,6 @@ public class StudentController {
            @RequestParam("semester") String semester,
            @RequestParam("studentId") int studentId) {
 
-
-       // TODO
-       //  hint: use enrollment repository method findByYearAndSemesterOrderByCourseId
-       //  remove the following line when done
        List<EnrollmentDTO> schedule = new ArrayList<>();
        List<Enrollment> enrollments = enrollmentRepository.findByYearAndSemesterOrderByCourseId(year, semester, studentId);
        for (Enrollment e : enrollments) {
@@ -127,8 +116,6 @@ public class StudentController {
     public EnrollmentDTO addCourse(
 		    @PathVariable int sectionNo,
             @RequestParam("studentId") int studentId ) {
-
-        // TODO
 
         //check that user exists
         User u = userRepository.findById(studentId).orElse(null);
