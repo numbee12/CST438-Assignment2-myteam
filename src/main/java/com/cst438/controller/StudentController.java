@@ -2,6 +2,7 @@ package com.cst438.controller;
 
 import com.cst438.domain.*;
 import com.cst438.dto.EnrollmentDTO;
+import com.cst438.dto.GradeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,14 @@ public class StudentController {
     @Autowired
     TermRepository termRepository;
 
+    @Autowired
+    GradeRepository gradeRepository;
+
+    @Autowired
+    AssignmentRepository assignmentRepository;
+
+
+
 
    // student gets transcript showing list of all enrollments
    // studentId will be temporary until Login security is implemented
@@ -51,7 +60,7 @@ public class StudentController {
                 new EnrollmentDTO(
                     e.getEnrollmentId(),
                     e.getGrade(),
-                    e.getStudent().getId(),
+                    e.getStudent().getId(),  //we are calling get id here when it is a passed param
                     e.getStudent().getName(),
                     e.getStudent().getEmail(),
                     e.getSection().getCourse().getCourseId(),
@@ -81,6 +90,8 @@ public class StudentController {
 
        List<EnrollmentDTO> schedule = new ArrayList<>();
        List<Enrollment> enrollments = enrollmentRepository.findByYearAndSemesterOrderByCourseId(year, semester, studentId);
+       //we are not checking for empty enrollments/ enrollments not found
+       //should we be making a copy and returning it instead?
        for (Enrollment e : enrollments) {
 
            if (!e.getStudent().getType().equals("STUDENT")) {
@@ -220,4 +231,60 @@ public class StudentController {
        }
         enrollmentRepository.delete(e);
    }
+
+/**
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+    @GetMapping("/grade/{assigmentId}")
+    public GradeDTO getGrade(
+        @PathVariable int assignmentId,
+        @RequestParam("studentId") int studentId) {
+
+        //check that user exists
+        User u = userRepository.findById(studentId).orElse(null);
+        if (u == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+        }
+
+        //check that the assignment exits
+        Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
+        if (a == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "that assignment does not exist");
+        }
+
+
+
+        if (!e.getStudent().getType().equals("STUDENT")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
+        } else if (studentId != e.getStudent().getId()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "student id does not match");
+        }
+
+
+        transcript.add(
+                new EnrollmentDTO(
+                        e.getEnrollmentId(),
+                        e.getGrade(),
+                        e.getStudent().getId(),  //we are calling get id here when it is a passed param
+                        e.getStudent().getName(),
+                        e.getStudent().getEmail(),
+                        e.getSection().getCourse().getCourseId(),
+                        e.getSection().getSecId(),
+                        e.getSection().getSectionNo(),
+                        e.getSection().getBuilding(),
+                        e.getSection().getRoom(),
+                        e.getSection().getTimes(),
+                        e.getSection().getCourse().getCredits(),
+                        e.getSection().getTerm().getYear(),
+                        e.getSection().getTerm().getSemester()
+                )
+        );
+
+        return transcript;
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+**/
+
 }
