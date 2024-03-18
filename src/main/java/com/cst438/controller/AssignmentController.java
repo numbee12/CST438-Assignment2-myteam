@@ -202,7 +202,7 @@ public class AssignmentController {
                     a.getDueDate(),
                     a.getSection().getCourse().getCourseId(),
                     a.getSection().getSecId(),
-                    g.getScore());
+                    g.getScore()));
             }
             return assignmentStudentDTOList;
         }
