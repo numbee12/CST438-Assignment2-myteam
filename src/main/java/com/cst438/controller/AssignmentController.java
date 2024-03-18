@@ -183,27 +183,23 @@ public class AssignmentController {
         // student must be enrolled in the section
         //TEST URL http://localhost:8080/assignments?studentId=3&year=2024&semester=Spring
         @GetMapping("/assignments")
-        public List<AssignmentStudentDTO> getStudentAssignments (
-        @RequestParam("studentId") int studentId,
-        @RequestParam("year") int year,
-        @RequestParam("semester") String semester){
+        public List<AssignmentDTO> getStudentAssignments (
+                @RequestParam("studentId") int studentId,
+                @RequestParam("year") int year,
+                @RequestParam("semester") String semester){
 
             List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(studentId,year,semester);
 
-            List<AssignmentStudentDTO> assignmentStudentDTOList = new ArrayList<>();
-
+            List<AssignmentDTO> assignmentDTOList = new ArrayList<>();
             for(Assignment a: assignments){
-                Grade g = gradeRepository.findByAssignmentId(a.getAssignmentId());
-                assignmentStudentDTOList.add(new AssignmentStudentDTO(
-                    a.getAssignmentId(),
-                    a.getTitle(),
-                    //changed the DTO declaration for this from Date (as prof had it) to String (as was coded in our assigment) but this may need to be fixed.
-                    //as that means that the variables in our class declarations (specifically DueDate in Assignment) was changed from Date to String.
-                    a.getDueDate(),
-                    a.getSection().getCourse().getCourseId(),
-                    a.getSection().getSecId(),
-                    g.getScore());
+                assignmentDTOList.add(new AssignmentDTO(
+                        a.getAssignmentId(),
+                        a.getTitle(),
+                        a.getDueDate(),
+                        a.getSection().getCourse().getCourseId(),
+                        a.getSection().getSecId(),
+                        a.getSection().getSectionNo()));
             }
-            return assignmentStudentDTOList;
+            return assignmentDTOList;
         }
-    }
+}
