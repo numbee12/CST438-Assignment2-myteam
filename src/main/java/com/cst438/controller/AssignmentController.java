@@ -2,6 +2,7 @@ package com.cst438.controller;
 
 import com.cst438.domain.*;
 import com.cst438.dto.AssignmentDTO;
+import com.cst438.dto.AssignmentStudentDTO;
 import com.cst438.dto.GradeDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +40,10 @@ public class AssignmentController {
     public List<AssignmentDTO> getAssignments(@PathVariable("secNo") int secNo) {
 
         List<Assignment> assignments = assignmentRepository.findBySectionNoOrderByDueDate(secNo);
+        //we are not checking for empty/ null assignments
 
         List<AssignmentDTO> assignmentDTOList = new ArrayList<>();
+
         for (Assignment a : assignments) {
             assignmentDTOList.add(new AssignmentDTO(
                 a.getAssignmentId(),
@@ -175,27 +178,32 @@ public class AssignmentController {
             }
         }
 
+        // SEE MASTER BRANCH - This was supposed to return an AssignmentStudentDTO, not an Assignment DTO.
         // student lists their assignments/grades for an enrollment ordered by due date
         // student must be enrolled in the section
         //TEST URL http://localhost:8080/assignments?studentId=3&year=2024&semester=Spring
         @GetMapping("/assignments")
-        public List<AssignmentDTO> getStudentAssignments (
+        public List<AssignmentStudentDTO> getStudentAssignments (
         @RequestParam("studentId") int studentId,
         @RequestParam("year") int year,
         @RequestParam("semester") String semester){
 
             List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(studentId,year,semester);
 
-            List<AssignmentDTO> assignmentDTOList = new ArrayList<>();
+            List<AssignmentStudentDTO> assignmentStudentDTOList = new ArrayList<>();
+
             for(Assignment a: assignments){
-                assignmentDTOList.add(new AssignmentDTO(
+                Grade g = gradeRepository.findByAssignmentId(a.getAssignmentId());
+                assignmentStudentDTOList.add(new AssignmentStudentDTO(
                     a.getAssignmentId(),
                     a.getTitle(),
+                    //changed the DTO declaration for this from Date (as prof had it) to String (as was coded in our assigment) but this may need to be fixed.
+                    //as that means that the variables in our class declarations (specifically DueDate in Assignment) was changed from Date to String.
                     a.getDueDate(),
                     a.getSection().getCourse().getCourseId(),
                     a.getSection().getSecId(),
-                    a.getSection().getSectionNo()));
+                    g.getScore());
             }
-            return assignmentDTOList;
+            return assignmentStudentDTOList;
         }
     }
