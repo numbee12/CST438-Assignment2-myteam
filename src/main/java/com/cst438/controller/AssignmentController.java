@@ -183,24 +183,30 @@ public class AssignmentController {
         // student must be enrolled in the section
         //TEST URL http://localhost:8080/assignments?studentId=3&year=2024&semester=Spring
         @GetMapping("/assignments")
-        public List<AssignmentDTO> getStudentAssignments (
+        public List<AssignmentStudentDTO> getStudentAssignments (
                 @RequestParam("studentId") int studentId,
                 @RequestParam("year") int year,
                 @RequestParam("semester") String semester){
 
             List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(studentId,year,semester);
 
-            List<AssignmentDTO> assignmentDTOList = new ArrayList<>();
+            List<AssignmentStudentDTO> assignmentStudentDTO = new ArrayList<>();
             for(Assignment a: assignments){
+                Enrollment enrollment =enrollmentRepository.findEnrollmentBySectionNoAndStudentId(a.getSection().getSectionNo(), studentId);
+                Grade grade = gradeRepository.findByEnrollmentIdAndAssignmentId(enrollment.getEnrollmentId(),a.getAssignmentId());
+                Integer score = null;
+                if(grade!= null){
+                    score = grade.getScore();
+                }
 
-                assignmentDTOList.add(new AssignmentDTO(
+                assignmentStudentDTO.add(new AssignmentStudentDTO(
                         a.getAssignmentId(),
                         a.getTitle(),
                         a.getDueDate(),
                         a.getSection().getCourse().getCourseId(),
                         a.getSection().getSecId(),
-                        a.getSection().getSectionNo()));
+                        score));
             }
-            return assignmentDTOList;
+            return assignmentStudentDTO;
         }
 }
