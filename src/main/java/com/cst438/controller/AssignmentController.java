@@ -117,9 +117,15 @@ public class AssignmentController {
         // logged in user must be instructor of the section
         @DeleteMapping("/assignments/{assignmentId}")
         public void deleteAssignment ( @PathVariable("assignmentId") int assignmentId){
-            Assignment d = assignmentRepository.findById(assignmentId).orElse(null);
-            if (d != null) {
-                assignmentRepository.delete(d);
+            Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
+
+            List<Grade> grade = gradeRepository.findByAssignmentId(assignmentId);
+
+            if (a != null) {
+                for (Grade g : grade) {
+                    gradeRepository.delete(g);
+                }
+                assignmentRepository.delete(a);
             }
         }
 
