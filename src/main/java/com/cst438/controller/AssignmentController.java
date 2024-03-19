@@ -122,8 +122,12 @@ public class AssignmentController {
             List<Grade> grade = gradeRepository.findByAssignmentId(assignmentId);
 
             if (a != null) {
+
                 for (Grade g : grade) {
-                    gradeRepository.delete(g);
+                    if (g.getScore() != null){
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cannot delete an assignment if a grade has been recorded");
+                    }
+                    /**gradeRepository.delete(g);***/
                 }
                 assignmentRepository.delete(a);
             }

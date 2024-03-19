@@ -225,7 +225,7 @@ public class StudentController {
        //check that grade is null
        Grade g = gradeRepository.findByEnrollmentId(e.getEnrollmentId());
        if (g != null) {
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cannot delete an enrollment a grade has already been given");
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cannot delete an enrollment for which a grade has already been given");
        }
 
        // check that today is not after the dropDeadline for section
