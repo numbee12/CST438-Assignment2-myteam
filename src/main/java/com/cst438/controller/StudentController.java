@@ -91,7 +91,6 @@ public class StudentController {
        List<EnrollmentDTO> schedule = new ArrayList<>();
        List<Enrollment> enrollments = enrollmentRepository.findByYearAndSemesterOrderByCourseId(year, semester, studentId);
        //we are not checking for empty enrollments/ enrollments not found
-       //should we be making a copy and returning it instead?
        for (Enrollment e : enrollments) {
 
            if (!e.getStudent().getType().equals("STUDENT")) {
@@ -221,6 +220,12 @@ public class StudentController {
 
        if(u == null){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid user id");
+       }
+
+       //check that grade is null
+       Grade g = gradeRepository.findByEnrollmentId(e.getEnrollmentId());
+       if (g != null) {
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cannot delete an enrollment a grade has already been given");
        }
 
        // check that today is not after the dropDeadline for section
