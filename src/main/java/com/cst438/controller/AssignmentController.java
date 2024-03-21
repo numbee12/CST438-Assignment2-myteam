@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -64,28 +66,41 @@ public class AssignmentController {
     @PostMapping("/assignments")
     public AssignmentDTO createAssignment(
         @RequestBody AssignmentDTO assignmentDTO) {
-        Assignment a = new Assignment();
-        a.setAssignmentId(assignmentDTO.id());
-        a.setTitle(assignmentDTO.title());
-        a.setDueDate(assignmentDTO.dueDate());
 
         Section section = sectionRepository.findById(assignmentDTO.secNo()).orElse(null);
 
-        if (section != null) {
-            a.setSection(section);
-            assignmentRepository.save(a);
-
-            return new AssignmentDTO(
-                a.getAssignmentId(),
-                a.getTitle(),
-                a.getDueDate(),
-                a.getSection().getCourse().getCourseId(),
-                a.getSection().getSecId(),
-                a.getSection().getSectionNo()
-            );
-        } else {
-            throw  new ResponseStatusException( HttpStatus.NOT_FOUND);
+        if (section == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section not found. secNo: "+assignmentDTO.secNo());
         }
+
+        Date startDate = new Date(section.getTerm().getStartDate().getTime());
+        Date endDate = new Date(section.getTerm().getEndDate().getTime());
+        Date dueDate;
+
+        try {
+            SimpleDateFormat df =new SimpleDateFormat("yyyy-MM-dd");
+            dueDate = df.parse(assignmentDTO.dueDate());
+        } catch (ParseException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "assignment due date must be in yyyy-MM-dd format");
+        }
+        if (dueDate.before(startDate) || dueDate.after(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "assignment due date must be within section term");
+        }
+
+        Assignment a = new Assignment();
+        a.setTitle(assignmentDTO.title());
+        a.setDueDate(assignmentDTO.dueDate());
+        a.setSection(section);
+        assignmentRepository.save(a);
+
+        return new AssignmentDTO(
+            a.getAssignmentId(),
+            a.getTitle(),
+            a.getDueDate(),
+            a.getSection().getCourse().getCourseId(),
+            a.getSection().getSecId(),
+            a.getSection().getSectionNo()
+        );
     }
 
         // update assignment for a section.  Only title and dueDate may be changed.
@@ -95,20 +110,40 @@ public class AssignmentController {
         //TEST BODY {"id": 2,"title": "db homework 1 Update","dueDate": "2024-04-04","courseId": "cst363","secId": 1,"secNo": 8}
         @PutMapping("/assignments")
         public AssignmentDTO updateAssignment (@RequestBody AssignmentDTO dto){
-            Assignment u = assignmentRepository.findById(dto.id()).orElse(null);
-            if(u == null) {
+            Assignment a = assignmentRepository.findById(dto.id()).orElse(null);
+            if(a == null) {
                 throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "Assignment not found "+ dto.id());
             } else {
-                u.setTitle(dto.title());
-                u.setDueDate(dto.dueDate());
-                assignmentRepository.save(u);
+                Section section = sectionRepository.findById(dto.secNo()).orElse(null);
+
+                if (section == null) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section not found. secNo: "+dto.secNo());
+                }
+
+                Date startDate = new Date(section.getTerm().getStartDate().getTime());
+                Date endDate = new Date(section.getTerm().getEndDate().getTime());
+                Date dueDate;
+
+                try {
+                    SimpleDateFormat df =new SimpleDateFormat("yyyy-MM-dd");
+                    dueDate = df.parse(dto.dueDate());
+                } catch (ParseException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "assignment due date must be in yyyy-MM-dd format");
+                }
+                if (dueDate.before(startDate) || dueDate.after(endDate)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "assignment due date must be within section term");
+                }
+
+                a.setTitle(dto.title());
+                a.setDueDate(dto.dueDate());
+                assignmentRepository.save(a);
                 return new AssignmentDTO(
-                    u.getAssignmentId(),
-                    u.getTitle(),
-                    u.getDueDate(),
-                    u.getSection().getCourse().getCourseId(),
-                    u.getSection().getSecId(),
-                    u.getSection().getSectionNo()
+                    a.getAssignmentId(),
+                    a.getTitle(),
+                    a.getDueDate(),
+                    a.getSection().getCourse().getCourseId(),
+                    a.getSection().getSecId(),
+                    a.getSection().getSectionNo()
                 );
             }
         }
