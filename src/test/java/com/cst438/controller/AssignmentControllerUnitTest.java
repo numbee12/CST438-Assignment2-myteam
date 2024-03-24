@@ -3,7 +3,11 @@ package com.cst438.controller;
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentRepository;
 import com.cst438.dto.AssignmentDTO;
+import com.cst438.dto.EnrollmentDTO;
+import com.cst438.dto.GradeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -130,6 +134,110 @@ public class AssignmentControllerUnitTest {
         String message = response.getErrorMessage();
         assertEquals("assignment due date must be within section term", message);
 
+    }
+    //instructor adds a new assignment with invalid section number
+    @Test
+    public void addAssignmentFailBadSectionNo() throws Exception {
+        //mock Response
+        MockHttpServletResponse response;
+
+        //Section No 1-11 are in the database
+        AssignmentDTO assignmentDTO = new AssignmentDTO(
+            1,
+            "Bad Section Test",
+            "2024-05-16",
+            "cst438",
+            1,
+            -1
+
+        );
+        //POST request
+        response = mvc.perform(
+                MockMvcRequestBuilders
+                    .post("/assignments")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(assignmentDTO)))
+            .andReturn()
+            .getResponse();
+        //Response should be 404, NOT_FOUND
+        assertEquals(404, response.getStatus());
+        //Check expected error message returned
+        String message = response.getErrorMessage();
+        assertEquals("section not found. secNo: "+assignmentDTO.secNo(), message);
+    }
+
+    //instructor grades an assignment and enters scores for all enrolled students and uploads the scores
+    @Test
+    public void gradeAsgmntEnterScoresForAll() throws Exception{
+        //Mock Response
+        MockHttpServletResponse response;
+
+        List<EnrollmentDTO> enrollmentDTOList = new ArrayList<>();
+        enrollmentDTOList.add(new EnrollmentDTO(
+            1,
+            "B",
+            3,
+            "thomas edison",
+            "tedison@csumb.edu",
+            "cst338",
+            "Software Design",
+            1,
+            1,
+            "052",
+            "100",
+            "M W 10:00-11:50",
+            4,
+            2023,
+            "Fall"
+        ));
+        //PUT request
+        response = mvc.perform(
+                MockMvcRequestBuilders
+                    .put("/enrollments")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(enrollmentDTOList)))
+            .andReturn()
+            .getResponse();
+
+        // check the response code for 200 meaning OK
+        assertEquals(200, response.getStatus());
+        assertNotEquals(null, enrollmentDTOList.get(0).grade());
+
+    }
+
+    //instructor attempts to grade an assignment but the assignment id is invalid
+    @Test
+    public void updateGradesFailBadAssignmenttId() throws Exception{
+        //Mock Response
+        MockHttpServletResponse response;
+
+        //Grade ID 9 does not exist
+        List<GradeDTO> gradeDTOList = new ArrayList<>();
+        gradeDTOList.add(new GradeDTO(
+            9,
+            "thomas edison",
+            "tedison@csumb.edu",
+            "db homework 1",
+            "cst363",
+            1,
+            90
+        ));
+        //PUT request
+        response = mvc.perform(
+                MockMvcRequestBuilders
+                    .put("/grades")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(gradeDTOList)))
+            .andReturn()
+            .getResponse();
+        //Response should be 404, NOT_FOUND
+        assertEquals(404, response.getStatus());
+        //Check expected error message returned
+        String message = response.getErrorMessage();
+        assertEquals("dto not found "+gradeDTOList.get(0).courseId(), message);
     }
 
     private static String asJsonString(final Object obj) {
