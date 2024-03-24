@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.junit.jupiter.api.Assertions.*;
 
 /*
- * example of unit test to add a section to an existing course
+ * Professor's example of unit test to add a section to an existing course
  */
 
 @AutoConfigureMockMvc
@@ -91,6 +91,10 @@ public class SectionControllerUnitTest {
         s = sectionRepository.findById(result.secNo()).orElse(null);
         assertNull(s);  // section should not be found after delete
     }
+
+    /*
+     * Professor's example of unit test to add a section but course does not exist
+     */
 
     @Test
     public void addSectionFailsBadCourse( ) throws Exception {
