@@ -11,6 +11,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/*
+ * Professor's example of SectionController System Test
+ */
 public class SectionControllerSystemTest {
 
     // TODO edit the following to give the location and file name
