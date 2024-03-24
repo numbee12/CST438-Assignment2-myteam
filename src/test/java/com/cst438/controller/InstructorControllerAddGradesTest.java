@@ -39,10 +39,13 @@ public class InstructorControllerAddGradesTest {
 
         //get existing grades for the enrollments being changed and save them
         Enrollment e1Before = enrollmentRepository.findById(1).orElse(null);
+        assertNotNull(e1Before);
         String e1GradeBefore = e1Before.getGrade();
         Enrollment e2Before = enrollmentRepository.findById(2).orElse(null);
+        assertNotNull(e2Before);
         String e2GradeBefore = e2Before.getGrade();
         Enrollment e3Before = enrollmentRepository.findById(3).orElse(null);
+        assertNotNull(e3Before);
         String e3GradeBefore = e3Before.getGrade();
 
         // create EnrollmentDTO list with changed grades.
