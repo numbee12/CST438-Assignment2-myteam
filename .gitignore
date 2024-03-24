@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Selenium Chrome Driver ###
+src/test/java/com/cst438/ChromeDriver/chromedriver
+src/test/java/com/cst438/ChromeDriver/chromedriver.exe
