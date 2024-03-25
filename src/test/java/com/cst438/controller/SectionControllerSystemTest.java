@@ -87,7 +87,7 @@ public class SectionControllerSystemTest {
         Thread.sleep(SLEEP_DURATION);
 
         // verify that cst499 is not in the list of sections
-        // if it exists, then delete it
+        // if it exists, then delete it 
         // Selenium throws NoSuchElementException when the element is not found
         try {
             while (true) {
