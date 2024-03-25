@@ -44,7 +44,7 @@ public class StudentEnrollIntoSectionTest {
                 3,
                 "thomas edison",
                 "tedison@csumb.edu",
-                "cst438",
+                "cst338",
                 "Software Engineering",
                 1,
                 5,
@@ -62,7 +62,7 @@ public class StudentEnrollIntoSectionTest {
 
         response = mvc.perform(
                         MockMvcRequestBuilders
-                                .post("//enrollments/sections/7?studentId=3")
+                                .post("/enrollments/sections/7?studentId=3")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andReturn()
@@ -80,8 +80,8 @@ public class StudentEnrollIntoSectionTest {
        assertEquals(3, result.studentId());
        assertEquals("thomas edison", result.name());
        assertEquals("tedison@csumb.edu", result.email());
-       assertEquals("cst438", result.courseId());
-       assertEquals("Software Engineering", result.title());
+       assertEquals("cst338", result.courseId());
+       assertEquals("Software Design", result.title());
 //       assertNotEquals(1, result.sectionId();
 //       assertNotEquals(5, result.sectionNo();
 //       assertNotEquals(5, result.building();
@@ -118,25 +118,25 @@ public class StudentEnrollIntoSectionTest {
         // enrollment id does not exist
         EnrollmentDTO enroll = new EnrollmentDTO(
                 1, // do I need it?
-                "95",
+                "A",
                 3,
                 "thomas edison",
                 "tedison@csumb.edu",
-                "cst400",
-                "db homework 1",
+                "cst438",
+                "Software Engineering",
                 1,
-                0,
+                10,
                 "052",
-                "104",
-                "W F 1:00-2:50 pm",
-                5,
+                "222",
+                "T Th 12:00-1:50",
+                4,
                 2024,
                 "Spring"
         );
         // issue the POST request
         response = mvc.perform(
                         MockMvcRequestBuilders
-                                .post("/enrollments")
+                                .post("/enrollments/sections/10?studentId=3")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
@@ -147,7 +147,7 @@ public class StudentEnrollIntoSectionTest {
 
         // check the expected error message
         String message = response.getErrorMessage();
-        assertEquals("Section not found cst599", message);
+        assertEquals("this student is already enrolled in this section", message);
     }
 
 
