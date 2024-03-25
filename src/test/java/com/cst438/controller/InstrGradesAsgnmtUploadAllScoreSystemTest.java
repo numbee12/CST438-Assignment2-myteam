@@ -100,14 +100,14 @@ public class InstrGradesAsgnmtUploadAllScoreSystemTest {
                 Thread.sleep(SLEEP_DURATION);
 
             //Enters score ans Saves Score
-//                WebElement asgnmtGrades = driver.findElement(By.id("asgmntGrade"));
-//                List<WebElement> asgnmtScore = asgnmtGrades.findElements(By.id("assignmentGrade"));
-//                WebElement score = driver.findElement(By.id("asgnmtScore"));
-//                if(score!= null){
-                //driver.findElement(By.id("asgnmtScore")).click();
-                driver.findElement(By.name("score")).clear();
-                driver.findElement(By.name("score")).sendKeys("55");
-                driver.findElement(By.id("scoreSave")).click();
+                WebElement score = driver.findElement(By.name("score"));
+                if(score == null) {
+                    driver.findElement(By.id("scoreClose")).click();
+                }else {
+                    driver.findElement(By.name("score")).clear();
+                    driver.findElement(By.name("score")).sendKeys("77");
+                    driver.findElement(By.id("scoreSave")).click();
+                }
 
                 Thread.sleep(SLEEP_DURATION);
 
