@@ -7,6 +7,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +59,11 @@ public class InstructorControllerAddFinalGradesSystemTest {
     public void systemTestAddFinalGrades() throws Exception {
         //add grades for all students
 
+        //to store oldGrades
+        List<String> oldgList = new ArrayList<>();
+
+        //TODO prechecks
+
         //sendkeys to id year 2024
         WebElement we = driver.findElement(By.id("year"));
         we.sendKeys("2024");
@@ -80,14 +86,13 @@ public class InstructorControllerAddFinalGradesSystemTest {
         //wait..
         Thread.sleep(SLEEP_DURATION);
 
-        //get all the headers (thead tag) in enrollmentsTable  --maybe not
-
+        //navigate to enrollments Table
         WebElement enrllmntsTable = driver.findElement(By.id("enrollmentsTable"));
-        //retrieve the number of the column (index of the array of headers) that =="Grade"
-//        List<WebElement> colHeadings = enrllmntsTable.findElements(By.tagName("th"));
-//        //get all the rows in id enrollmentsTable ?
+
+        //get all the rows in id enrollmentsTable ?
         WebElement enrllmntsTableBody = enrllmntsTable.findElement(By.tagName("tbody"));
         List<WebElement> rows = enrllmntsTableBody.findElements(By.tagName("tr"));
+
         //for each row in enrollmentsTable
         for (WebElement row : rows) {
             //in column number that Grade was in
@@ -103,16 +108,23 @@ public class InstructorControllerAddFinalGradesSystemTest {
             gradeInput.sendKeys("A"); //everybody gets an A!
         }
 
+        //find button id "saveGrades" and click it
         driver.findElement(By.id("saveGrades")).click();
 
         Thread.sleep(5000);
 
-        //put back to beginning
+        //check that the grades are saved
 
-    //find button id "saveGrades"
-    //click it
+        //TODO put back to beginning
+        //iterate through grades
+        //get row for each grade
+        //clear and update input to old grade
 
-    //check that the grades are saved
+        //find button id "saveGrades"
+        //click it
+
+
+    }
 
 
 }
