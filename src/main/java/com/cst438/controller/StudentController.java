@@ -158,7 +158,7 @@ public class StudentController {
         // check that student is not already enrolled into this section
         Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
         if(existing != null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "this student is already enrolled in this section ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "this student is already enrolled in this section");
         }
 
         // create a new enrollment entity and save.  The enrollment grade will
