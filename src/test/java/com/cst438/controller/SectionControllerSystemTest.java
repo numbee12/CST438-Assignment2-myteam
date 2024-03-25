@@ -141,7 +141,7 @@ public class SectionControllerSystemTest {
         driver.findElement(By.id("close")).click();
 
         // verify that new Section shows up on Sections list
-        // find the row for cst499
+        // find the row for cst499e
         WebElement row499 = driver.findElement(By.xpath("//tr[td='cst499']"));
         List<WebElement> buttons = row499.findElements(By.tagName("button"));
         // delete is the second button
