@@ -11,11 +11,14 @@ insert into user_table (id, name, email, password, type) values
 (1, 'david wisneski', 'dwisneski@csumb.edu', '', 'INSTRUCTOR'),
 (2, 'joshua gross', 'jgross@csumb.edu', '', 'INSTRUCTOR'),
 (3, 'thomas edison', 'tedison@csumb.edu', '', 'STUDENT'),
--- (5, 'alexander grahambell', 'agb@csumb.edu', '', 'STUDENT'),
 -- (6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
 -- (7, 'albert einstein', 'ae@csumb.edu', '', 'STUDENT'),
 -- (8, 'alan turing', 'at@csumb.edu', '', 'STUDENT'),
-(4, 'fred brooks', 'fbrooks@csumb.edu', '', 'ADMIN');
+(4, 'fred brooks', 'fbrooks@csumb.edu', '', 'ADMIN'),
+(5, 'alexander bell', 'agbell@csumb.edu', '', 'STUDENT'),
+(6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
+(7, 'albert einstein', 'ae@csumb.edu', '', 'STUDENT'),
+(8, 'alan turing', 'at@csumb.edu', '', 'STUDENT');
 
 
 insert into course values
@@ -45,7 +48,11 @@ insert into section(section_no, course_id, sec_id, term_id, building, room, time
 insert into enrollment (enrollment_id, grade, section_no, user_id ) values
 (1, 'A', 1, 3),
 (2, 'B', 8, 3),
-(3,  null, 10, 3);
+(3,  null, 10, 3),
+(4, 'C', 8, 5),
+(5, 'C', 8, 6),
+(6, 'A', 8, 7),
+(7, 'C', 8, 8);
 -- (4,  null, 8, 3);
 -- (5,  null, 8, 3);
 -- (6,  null, 8, 3);
