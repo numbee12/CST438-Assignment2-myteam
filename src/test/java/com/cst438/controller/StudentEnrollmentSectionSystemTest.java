@@ -70,11 +70,19 @@ public class StudentEnrollmentSectionSystemTest {
     @Test
     public void systemTestStudentEnroll() throws Exception {
 
+        //Selects Enroll In Class
         driver.findElement(By.cssSelector("#root > div > nav > a:nth-child(3)")).click();
         Thread.sleep(SLEEP_DURATION);
+        //Selects ENROLL
         driver.findElement(By.cssSelector("#root > div > table > tbody > tr:nth-child(1) > td:nth-child(9) > button")).click();
         Thread.sleep(SLEEP_DURATION);
+        //Selects Enroll to Confirm
         driver.findElement(By.cssSelector("#react-confirm-alert > div > div > div > div > button:nth-child(1)")).click();
+        Thread.sleep(SLEEP_DURATION);
+
+        //Confirms student has succesfully enrolled
+        String confirmMessage = driver.findElement(By.cssSelector("#root > div > h4")).getText();
+        assertEquals("You have enrolled in Section: 6", confirmMessage);
         Thread.sleep(SLEEP_DURATION);
 
 
