@@ -99,25 +99,37 @@ public class InstrGradesAsgnmtUploadAllScoreSystemTest {
                 gradeButton.get(0).click();
                 Thread.sleep(SLEEP_DURATION);
 
-            //Enters score ans Saves Score
-                WebElement score = driver.findElement(By.name("score"));
-                if(score == null) {
-                    driver.findElement(By.id("scoreClose")).click();
-                }else {
-                    driver.findElement(By.name("score")).clear();
-                    driver.findElement(By.name("score")).sendKeys("77");
-                    driver.findElement(By.id("scoreSave")).click();
+
+                //Selects each score field and creates a list of assignment scores
+                WebElement assignments = driver.findElement(By.id("assignments"));
+                List<WebElement> asgScores = assignments.findElements(By.name("score"));
+
+                //Asserts that the 5 text field for score exist
+                assertEquals(5, asgScores.size());
+
+                //Iterates through each score field for all students enrolled in the assignment
+                //Add score for each student and saves scores.
+                Integer add =0;
+                for(int i = 0; i < asgScores.size(); i++){
+                    Integer inputScore = (63 + 6 * i) + add;
+
+                    if(asgScores.get(i).getText().equals("")) {
+                        asgScores.get(i).clear();
+                        String inScore = inputScore.toString();
+                        asgScores.get(i).sendKeys(inScore);
+                        add=add+2;
+                        Thread.sleep(SLEEP_DURATION);
+                    }else{
+                        add=add+3;
+                        asgScores.get(i).click();
+                        Thread.sleep(SLEEP_DURATION);
+                    }
                 }
-
+                driver.findElement(By.id("scoreSave")).click();
                 Thread.sleep(SLEEP_DURATION);
-
-
-
             }
         } catch(NoSuchElementException e){
             //Does Nothing
         }
-
     }
-
 }
