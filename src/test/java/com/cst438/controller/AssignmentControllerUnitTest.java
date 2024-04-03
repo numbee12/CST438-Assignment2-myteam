@@ -3,11 +3,11 @@ package com.cst438.controller;
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentRepository;
 import com.cst438.dto.AssignmentDTO;
-import com.cst438.dto.EnrollmentDTO;
 import com.cst438.dto.GradeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -169,75 +170,92 @@ public class AssignmentControllerUnitTest {
 
     //instructor grades an assignment and enters scores for all enrolled students and uploads the scores
     @Test
-    public void gradeAsgmntEnterScoresForAll() throws Exception{
-        //Mock Response
+    public void gradeAsgmntEnterScoresForAll() throws Exception {
+        // Mock Response
         MockHttpServletResponse response;
-
-        List<EnrollmentDTO> enrollmentDTOList = new ArrayList<>();
-        enrollmentDTOList.add(new EnrollmentDTO(
-            1,
-            "B",
-            3,
-            "thomas edison",
-            "tedison@csumb.edu",
-            "cst338",
-            "Software Design",
-            1,
-            1,
-            "052",
-            "100",
-            "M W 10:00-11:50",
-            4,
-            2023,
-            "Fall"
-        ));
-        //PUT request
+        // get grades for assignment 1
         response = mvc.perform(
                 MockMvcRequestBuilders
-                    .put("/enrollments")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(enrollmentDTOList)))
-            .andReturn()
-            .getResponse();
-
+                        .get("/assignments/1/grades")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+        // get results
+        List<GradeDTO> result = fromJsonString(response.getContentAsString(), new TypeReference<List<GradeDTO>>() {
+        });
+        // make a copy for clean up
+        List<GradeDTO> originalGrades = result.stream().map(g -> g).collect(Collectors.toList());
+        // update the scores
+        result = result.stream().map(g -> {
+            GradeDTO gDTO = new GradeDTO(
+                    g.gradeId(),
+                    g.studentName(),
+                    g.studentEmail(),
+                    g.assignmentTitle(),
+                    g.courseId(),
+                    g.sectionId(),
+                    100 // 100 is the new score for test
+            );
+            return gDTO;
+        }).collect(Collectors.toList());
         // check the response code for 200 meaning OK
         assertEquals(200, response.getStatus());
-        assertNotEquals(null, enrollmentDTOList.get(0).grade());
-
-    }
-
-    //instructor attempts to grade an assignment but the assignment id is invalid
-    @Test
-    public void updateGradesFailBadAssignmenttId() throws Exception{
-        //Mock Response
-        MockHttpServletResponse response;
-
-        //Grade ID 9 does not exist
-        List<GradeDTO> gradeDTOList = new ArrayList<>();
-        gradeDTOList.add(new GradeDTO(
-            9,
-            "thomas edison",
-            "tedison@csumb.edu",
-            "db homework 1",
-            "cst363",
-            1,
-            90
-        ));
-        //PUT request
+        // time to update the grades
         response = mvc.perform(
                 MockMvcRequestBuilders
-                    .put("/grades")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(gradeDTOList)))
-            .andReturn()
-            .getResponse();
-        //Response should be 404, NOT_FOUND
+                        .put("/grades")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(result)))
+                .andReturn()
+                .getResponse();
+        // check response is ok
+        assertEquals(200, response.getStatus());
+        // check that the scores were updated
+        response = mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/assignments/1/grades")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+        result = fromJsonString(response.getContentAsString(), new TypeReference<List<GradeDTO>>() {
+        });
+        for (GradeDTO g : result) {
+            assertEquals(g.score(), 100); // check that the score was updated to 100
+        }
+        // clean up
+        response = mvc.perform(
+                MockMvcRequestBuilders
+                        .put("/grades")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(originalGrades))) // put back the original grades
+                .andReturn()
+                .getResponse();
+        // check response is ok
+        assertEquals(200, response.getStatus());
+    }
+
+    // instructor attempts to grade an assignment but the assignment id is invalid
+    @Test
+    public void updateGradesFailBadAssignmenttId() throws Exception {
+        // Mock Response
+        MockHttpServletResponse response;
+        // get grades for assignment 1
+        response = mvc.perform(
+                MockMvcRequestBuilders
+                        .get("/assignments/9/grades") // assignment ID 9 does not exist
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+        // Response should be 404, NOT_FOUND
         assertEquals(404, response.getStatus());
-        //Check expected error message returned
+        // Check expected error message returned
         String message = response.getErrorMessage();
-        assertEquals("dto not found "+gradeDTOList.get(0).courseId(), message);
+        assertEquals(message, "not found");
     }
 
     private static String asJsonString(final Object obj) {
@@ -249,6 +267,14 @@ public class AssignmentControllerUnitTest {
     }
 
     private static <T> T  fromJsonString(String str, Class<T> valueType ) {
+        try {
+            return new ObjectMapper().readValue(str, valueType);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static <T> T  fromJsonString(String str, TypeReference<T> valueType ) {
         try {
             return new ObjectMapper().readValue(str, valueType);
         } catch (Exception e) {

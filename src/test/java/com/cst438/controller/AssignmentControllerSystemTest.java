@@ -202,8 +202,4 @@ public class AssignmentControllerSystemTest {
 
     }
 
-    @Test
-    public void systemTestAddAssignmentBadDate() throws Exception {
-        // add code to test adding assignment with bad date
-    }
 }
