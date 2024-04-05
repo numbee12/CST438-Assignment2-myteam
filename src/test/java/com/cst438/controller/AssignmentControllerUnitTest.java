@@ -168,7 +168,8 @@ public class AssignmentControllerUnitTest {
         assertEquals("section not found. secNo: "+assignmentDTO.secNo(), message);
     }
 
-    //instructor grades an assignment and enters scores for all enrolled students and uploads the scores
+    // instructor grades an assignment and enters scores for all enrolled students
+    // and uploads the scores
     @Test
     public void gradeAsgmntEnterScoresForAll() throws Exception {
         // Mock Response
@@ -181,12 +182,16 @@ public class AssignmentControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse();
+        // check the response code for 200 meaning OK
+        assertEquals(200, response.getStatus());
         // get results
-        List<GradeDTO> result = fromJsonString(response.getContentAsString(), new TypeReference<List<GradeDTO>>() {
-        });
+        List<GradeDTO> result = fromJsonString(response.getContentAsString(), new TypeReference<List<GradeDTO>>() {});
         // make a copy for clean up
         List<GradeDTO> originalGrades = result.stream().map(g -> g).collect(Collectors.toList());
-        // update the scores
+        // check that none of the scores are 100 before changing them
+        assertFalse(result.stream().anyMatch(g -> g.score() != null ? g.score() == 100 : false),
+                "one of the scores is already 100");
+        // update the scores to 100
         result = result.stream().map(g -> {
             GradeDTO gDTO = new GradeDTO(
                     g.gradeId(),
@@ -199,8 +204,6 @@ public class AssignmentControllerUnitTest {
             );
             return gDTO;
         }).collect(Collectors.toList());
-        // check the response code for 200 meaning OK
-        assertEquals(200, response.getStatus());
         // time to update the grades
         response = mvc.perform(
                 MockMvcRequestBuilders
@@ -220,11 +223,11 @@ public class AssignmentControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse();
-        result = fromJsonString(response.getContentAsString(), new TypeReference<List<GradeDTO>>() {
-        });
-        for (GradeDTO g : result) {
-            assertEquals(g.score(), 100); // check that the score was updated to 100
-        }
+        // check response is ok
+        assertEquals(200, response.getStatus());
+        result = fromJsonString(response.getContentAsString(), new TypeReference<List<GradeDTO>>() {});
+        // check that none of the scores are 100
+        assertFalse(result.stream().anyMatch(g -> g.score() != 100), "one of the scores is not 100");
         // clean up
         response = mvc.perform(
                 MockMvcRequestBuilders
