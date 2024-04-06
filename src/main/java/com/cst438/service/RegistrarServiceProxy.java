@@ -171,6 +171,7 @@ public class RegistrarServiceProxy {
         }
 
         Section section = new Section();
+        section.setSectionNo(sectionDTO.secNo());
         section.setCourse(course);
 
         Term term = termRepository.findByYearAndSemester(sectionDTO.year(), sectionDTO.semester());
