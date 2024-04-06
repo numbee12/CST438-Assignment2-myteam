@@ -3,8 +3,20 @@ package com.cst438.service;
 import com.cst438.domain.Course;
 import com.cst438.domain.CourseRepository;
 import com.cst438.domain.Enrollment;
+import com.cst438.domain.EnrollmentRepository;
+import com.cst438.domain.Section;
+import com.cst438.domain.SectionRepository;
+import com.cst438.domain.Term;
+import com.cst438.domain.TermRepository;
+import com.cst438.domain.User;
+import com.cst438.domain.UserRepository;
 import com.cst438.dto.CourseDTO;
+import com.cst438.dto.EnrollmentDTO;
+import com.cst438.dto.SectionDTO;
+import com.cst438.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,6 +39,14 @@ public class RegistrarServiceProxy {
 
     @Autowired
     CourseRepository courseRepository;
+    @Autowired
+    SectionRepository sectionRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
+    @Autowired
+    TermRepository termRepository;
 
     public void updateEnrollment(Enrollment e) {
         String msg = "updateEnrollment " + asJsonString(e);
@@ -142,21 +162,118 @@ public class RegistrarServiceProxy {
     private void deleteCourse(String s) {
         courseRepository.deleteById(s);
     }
-    private void addSection(String s) {
+    private void addSection(String s) throws Exception {
+        SectionDTO sectionDTO = fromJsonString(s, SectionDTO.class);
+
+        Course course = courseRepository.findById(sectionDTO.courseId()).orElse(null);
+        if (course == null ){
+            throw new Exception("Course not found: " + sectionDTO.courseId());
+        }
+
+        Section section = new Section();
+        section.setCourse(course);
+
+        Term term = termRepository.findByYearAndSemester(sectionDTO.year(), sectionDTO.semester());
+        if (term == null) {
+            throw new Exception("year, semester invalid");
+        }
+        section.setTerm(term);
+        section.setSecId(sectionDTO.secId());
+        section.setBuilding(sectionDTO.building());
+        section.setRoom(sectionDTO.room());
+        section.setTimes(sectionDTO.times());
+
+        User instructor = null;
+        if (sectionDTO.instructorEmail()==null || sectionDTO.instructorEmail().equals("")) {
+            section.setInstructor_email("");
+        } else {
+            instructor = userRepository.findByEmail(sectionDTO.instructorEmail());
+            if (instructor == null || !instructor.getType().equals("INSTRUCTOR")) {
+                throw new Exception("email not found or not an instructor " + sectionDTO.instructorEmail());
+            }
+            section.setInstructor_email(sectionDTO.instructorEmail());
+        }
+        sectionRepository.save(section);
     }
-    private void updateSection(String s) {
+    private void updateSection(String s) throws Exception {
+        SectionDTO sectionDTO = fromJsonString(s, SectionDTO.class);
+        Section section = sectionRepository.findById(sectionDTO.secNo()).orElse(null);
+
+        if (s==null) {
+            throw new Exception("section not found "+sectionDTO.secNo());
+        }
+        section.setSecId(sectionDTO.secId());
+        section.setBuilding(sectionDTO.building());
+        section.setRoom(sectionDTO.room());
+        section.setTimes(sectionDTO.times());
+
+        User instructor = null;
+        if (sectionDTO.instructorEmail()==null || sectionDTO.instructorEmail().equals("")) {
+            section.setInstructor_email("");
+        } else {
+            instructor = userRepository.findByEmail(sectionDTO.instructorEmail());
+            if (instructor == null || !instructor.getType().equals("INSTRUCTOR")) {
+                throw new Exception("email not found or not an instructor " + sectionDTO.instructorEmail());
+            }
+            section.setInstructor_email(sectionDTO.instructorEmail());
+        }
+        sectionRepository.save(section);
     }
-    private void deleteSection(String s) {
+    private void deleteSection(String s) throws Exception {
+        SectionDTO dto = fromJsonString(s, SectionDTO.class);
+        Section sec = sectionRepository.findById(dto.secNo()).orElse(null);
+        if (sec != null) {
+            throw new Exception("Section contains assignments or enrollmens: " + dto.secNo());
+        }
+        sectionRepository.deleteById(dto.secNo());
     }
-    private void addUser(String s) {
+    private void addUser(String s) throws Exception {
+        UserDTO dto = fromJsonString(s, UserDTO.class);
+        User u = new User();
+        u.setEmail(dto.name());
+        u.setEmail(dto.email());
+
+        u.setType(dto.type());
+        if (!dto.type().equals("STUDENT") &&
+            !dto.type().equals("INSTRUCTOR") &&
+            !dto.type().equals("ADMIN")) {
+            // invalid type
+            throw new Exception("invalid user type");
+        }
+        userRepository.save(u);
     }
-    private void updateUser(String s) {
+    private void updateUser(String s) throws Exception {
+        UserDTO dto = fromJsonString(s, UserDTO.class);
+        User u = userRepository.findById(dto.id()).orElse(null);
+        if (u==null) {
+            throw new Exception("user id not found");
+        }
+        u.setName(dto.name());
+        u.setEmail(dto.email());
+        u.setType(dto.type());
+        if (!dto.type().equals("STUDENT") &&
+            !dto.type().equals("INSTRUCTOR") &&
+            !dto.type().equals("ADMIN")) {
+            // invalid type
+            throw new Exception("invalid user type");
+        }
+        userRepository.save(u);
     }
     private void deleteUser(String s) {
+        UserDTO dto = fromJsonString(s, UserDTO.class);
+        User user = userRepository.findById(dto.id()).orElse(null);
+        if (user!=null) {
+            userRepository.delete(user);
+        }
     }
     private void addEnrollment(String s) {
+        EnrollmentDTO dto = fromJsonString(s, EnrollmentDTO.class);
+
     }
+
     private void deleteEnrollment(String s) {
+        EnrollmentDTO dto = fromJsonString(s, EnrollmentDTO.class);
+        enrollmentRepository.deleteById(dto.enrollmentId());
     }
 
     private void sendMessage(String s) {
