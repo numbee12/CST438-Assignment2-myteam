@@ -91,7 +91,7 @@ public class EnrollmentController {
 
             e.setGrade(eDTO.grade());
             enrollmentRepository.save(e);
-            registrarServiceProxy.updateEnrollment(e);
+            registrarServiceProxy.updateEnrollment(eDTO);
         }
     }
 

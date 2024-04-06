@@ -46,7 +46,7 @@ public class RegistrarServiceProxy {
     @Autowired
     TermRepository termRepository;
 
-    public void updateEnrollment(Enrollment e) {
+    public void updateEnrollment(EnrollmentDTO e) {
         String msg = "updateEnrollment " + asJsonString(e);
         sendMessage(msg);
     }
