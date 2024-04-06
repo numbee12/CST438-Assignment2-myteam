@@ -232,8 +232,9 @@ public class RegistrarServiceProxy {
     private void addUser(String s) throws Exception {
         UserDTO dto = fromJsonString(s, UserDTO.class);
         User u = new User();
-        u.setEmail(dto.name());
-        u.setName(dto.email());
+        u.setId(dto.id());
+        u.setName(dto.name());
+        u.setEmail(dto.email());
 
         u.setType(dto.type());
         if (!dto.type().equals("STUDENT") &&
