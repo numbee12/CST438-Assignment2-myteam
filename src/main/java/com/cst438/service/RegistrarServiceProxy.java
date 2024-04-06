@@ -155,8 +155,12 @@ public class RegistrarServiceProxy {
         c.setCredits(dto.credits());
 		courseRepository.save(c);
     }
-    private void deleteCourse(String s) {
-        courseRepository.deleteById(s);
+    private void deleteCourse(String s) throws Exception {
+        if (s != null && courseRepository.existsById(s)) {
+            courseRepository.deleteById(s);
+        } else {
+            throw new Exception("Course not found: " + s);
+        }
     }
     private void addSection(String s) throws Exception {
         SectionDTO sectionDTO = fromJsonString(s, SectionDTO.class);
