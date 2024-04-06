@@ -216,18 +216,19 @@ public class RegistrarServiceProxy {
         sectionRepository.save(section);
     }
     private void deleteSection(String s) throws Exception {
-        SectionDTO dto = fromJsonString(s, SectionDTO.class);
-        Section sec = sectionRepository.findById(dto.secNo()).orElse(null);
-        if (sec != null) {
-            throw new Exception("Section contains assignments or enrollmens: " + dto.secNo());
+        try {
+            Integer id = Integer.parseInt(s);
+            sectionRepository.deleteById(id);
+        } catch (NumberFormatException e) {
+            throw new Exception("Section contains assignments or enrollments: " + s);
         }
-        sectionRepository.deleteById(dto.secNo());
+
     }
     private void addUser(String s) throws Exception {
         UserDTO dto = fromJsonString(s, UserDTO.class);
         User u = new User();
         u.setEmail(dto.name());
-        u.setEmail(dto.email());
+        u.setName(dto.email());
 
         u.setType(dto.type());
         if (!dto.type().equals("STUDENT") &&
@@ -255,12 +256,13 @@ public class RegistrarServiceProxy {
         }
         userRepository.save(u);
     }
-    private void deleteUser(String s) {
-        UserDTO dto = fromJsonString(s, UserDTO.class);
-        User user = userRepository.findById(dto.id()).orElse(null);
-        if (user!=null) {
-            userRepository.delete(user);
-        }
+    private void deleteUser(String s) throws Exception {
+            try {
+                Integer id = Integer.parseInt(s);
+                userRepository.deleteById(id);
+            } catch (NumberFormatException e) {
+                throw new Exception("User not found: " + s);
+            }
     }
     private void addEnrollment(String s) throws Exception {
         EnrollmentDTO dto = fromJsonString(s, EnrollmentDTO.class);
@@ -280,9 +282,13 @@ public class RegistrarServiceProxy {
         enrollmentRepository.save(e);
     }
 
-    private void deleteEnrollment(String s) {
-        EnrollmentDTO dto = fromJsonString(s, EnrollmentDTO.class);
-        enrollmentRepository.deleteById(dto.enrollmentId());
+    private void deleteEnrollment(String s) throws Exception {
+        try {
+            Integer id = Integer.parseInt(s);
+            enrollmentRepository.deleteById(id);
+        } catch (NumberFormatException e) {
+            throw new Exception("Enrollment not found: " + s);
+        }
     }
 
     private void sendMessage(String s) {
