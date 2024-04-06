@@ -15,8 +15,6 @@ import com.cst438.dto.EnrollmentDTO;
 import com.cst438.dto.SectionDTO;
 import com.cst438.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -138,8 +136,6 @@ public class RegistrarServiceProxy {
             System.out.println("Error receiving from registrar service: " + e.getMessage());
         }
     }
-
-    // TODO: Add Code To Receiver Helper Methods
     
     private void addCourse(String s) {
         CourseDTO dto = fromJsonString(s, CourseDTO.class);
@@ -266,9 +262,22 @@ public class RegistrarServiceProxy {
             userRepository.delete(user);
         }
     }
-    private void addEnrollment(String s) {
+    private void addEnrollment(String s) throws Exception {
         EnrollmentDTO dto = fromJsonString(s, EnrollmentDTO.class);
-
+        User student = userRepository.findById(dto.studentId()).orElse(null);
+        if (student == null) {
+            throw new Exception("Student not found: " + dto.studentId());
+        }
+        Section section = sectionRepository.findById(dto.sectionId()).orElse(null);
+        if (section == null) {
+            throw new Exception("Section not found: " + dto.sectionId());
+        }
+        Enrollment e = new Enrollment();
+        e.setEnrollmentId(dto.enrollmentId());
+        e.setGrade(dto.grade());
+        e.setStudent(student);
+        e.setSection(section);
+        enrollmentRepository.save(e);
     }
 
     private void deleteEnrollment(String s) {
