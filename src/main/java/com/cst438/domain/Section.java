@@ -9,7 +9,6 @@ import java.util.List;
 public class Section {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="section_no")
     private int sectionNo;  // unique id assigned by database.  Used to enroll into a section.
 
@@ -27,13 +26,11 @@ public class Section {
     @Column(name="instructor_email")
     private String instructorEmail;
 
-    // TODO  uncomment the following lines
+    @OneToMany(mappedBy="section")
+    List<Enrollment> enrollments;
 
-//    @OneToMany(mappedBy="section")
-//    List<Enrollment> enrollments;
-
-//    @OneToMany(mappedBy="section")
-//    List<Assignment> assignments;
+    @OneToMany(mappedBy="section")
+    List<Assignment> assignments;
 
     public int getSectionNo() {
         return sectionNo;
