@@ -10,4 +10,8 @@ public interface UserRepository extends
 	List<User> findAllByOrderByIdAsc();
 
 	User findByEmail(String email);
+
+	//User findById(int id);
 }
+
+

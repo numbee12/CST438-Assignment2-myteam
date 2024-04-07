@@ -1,8 +1,5 @@
 package com.cst438.domain;
-
 import jakarta.persistence.*;
-
-import java.sql.Date;
 import java.util.List;
 
 @Entity
@@ -27,13 +24,8 @@ public class Section {
     @Column(name="instructor_email")
     private String instructorEmail;
 
-    // TODO  uncomment the following lines
-
-//    @OneToMany(mappedBy="section")
-//    List<Enrollment> enrollments;
-
-//    @OneToMany(mappedBy="section")
-//    List<Assignment> assignments;
+    @OneToMany(mappedBy="section")
+    List<Enrollment> enrollments;
 
     public int getSectionNo() {
         return sectionNo;
@@ -98,10 +90,4 @@ public class Section {
     public void setInstructor_email(String instructorEmail) {
         this.instructorEmail = instructorEmail;
     }
-
-//    public List<Enrollment> getEnrollments() {
-//        return enrollments;
-//    }
-
-//    public List<Assignment> getAssignments() { return assignments; }
 }
