@@ -115,6 +115,7 @@ public class SectionController {
         Section s = sectionRepository.findById(sectionno).orElse(null);
         if (s != null) {
             sectionRepository.delete(s);
+            gradebookService.deleteSection(sectionno);
         }
     }
 
