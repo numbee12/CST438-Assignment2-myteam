@@ -235,6 +235,10 @@ public class RegistrarServiceProxy {
         u.setId(dto.id());
         u.setName(dto.name());
         u.setEmail(dto.email());
+        // FIXME: since db expects password is not null, set password to empty string for now
+        // I don't believe we need password on our end & UserDTO does not contain password
+        // May need to change this in the future
+        u.setPassword("");
 
         u.setType(dto.type());
         if (!dto.type().equals("STUDENT") &&
@@ -276,9 +280,9 @@ public class RegistrarServiceProxy {
         if (student == null) {
             throw new Exception("Student not found: " + dto.studentId());
         }
-        Section section = sectionRepository.findById(dto.sectionId()).orElse(null);
+        Section section = sectionRepository.findById(dto.sectionNo()).orElse(null);
         if (section == null) {
-            throw new Exception("Section not found: " + dto.sectionId());
+            throw new Exception("Section not found: " + dto.sectionNo());
         }
         Enrollment e = new Enrollment();
         e.setEnrollmentId(dto.enrollmentId());
