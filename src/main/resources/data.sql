@@ -15,7 +15,7 @@ insert into user_table (id, name, email, password, type) values
 (5, 'alexander bell', 'agbell@csumb.edu', '', 'STUDENT'),
 (6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
 (7, 'albert einstein', 'ae@csumb.edu', '', 'STUDENT'),
-(8, 'alan turing', 'at@csumb.edu', '', 'STUDENT');
+(8, 'alan turing', 'at@csumb.edu', '', 'STUDENT'),
 (9, 'user', 'user@csumb.edu', '$2a$10$NVM0n8ElaRgg7zWO1CxUdei7vWoPg91Lz2aYavh9.f9q0e4bRadue','STUDENT'),
 (10, 'admin', 'admin@csumb.edu', '$2a$10$8cjz47bjbR4Mn8GMg9IZx.vyjhLXR/SKKMSZ9.mP9vpMu0ssKi8GW' , 'ADMIN');
 -- (6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
