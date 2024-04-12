@@ -191,7 +191,6 @@ public class AssignmentController {
                    grade.setAssignment(a);
                    grade.setScore(null);
                    gradeRepository.save(grade);
-                   grade = gradeRepository.findByEnrollmentIdAndAssignmentId(enrollment.getEnrollmentId(), assignmentId);
                 }
                     GradeDTO gradeDTO = new GradeDTO(
                         grade.getGradeId(),
