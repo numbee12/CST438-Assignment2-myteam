@@ -8,7 +8,7 @@ insert into term (term_id, tyear, semester, add_date, add_deadline, drop_deadlin
 (11, 2024, 'Fall', '2024-01-01', '2024-12-31', '2024-12-31', '2024-04-01', '2024-11-01');
 
 insert into user_table (id, name, email, password, type) values
-(1, 'david wisneski', 'dwisneski@csumb.edu', '', 'INSTRUCTOR'),
+(1, 'david wisneski', 'dwisneski@csumb.edu', '$2a$10$qrAAm2yK1zfP01Bcck0Ty.WkHqF8QyJ6MOHE5gM53p8Czv1ymz9Ia', 'INSTRUCTOR'),
 (2, 'joshua gross', 'jgross@csumb.edu', '', 'INSTRUCTOR'),
 (3, 'thomas edison', 'tedison@csumb.edu', '', 'STUDENT'),
 (4, 'fred brooks', 'fbrooks@csumb.edu', '', 'ADMIN'),
