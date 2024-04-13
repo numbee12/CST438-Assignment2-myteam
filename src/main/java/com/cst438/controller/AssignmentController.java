@@ -42,7 +42,14 @@ public class AssignmentController {
     // TEST URL http://localhost:8080/sections/8/assignments
     @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
     @GetMapping("/sections/{secNo}/assignments")
-    public List<AssignmentDTO> getAssignments(@PathVariable("secNo") int secNo) {
+    public List<AssignmentDTO> getAssignments(@PathVariable("secNo") int secNo, Principal principal)  {
+        String instructorEmail = principal.getName();
+        Section section = sectionRepository.findById(secNo).orElse(null);
+        if (section == null) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "section not found. secNo: "+secNo);
+        } else if (section.getInstructorEmail() == null || !section.getInstructorEmail().equals(instructorEmail)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
+        }
 
         List<Assignment> assignments = assignmentRepository.findBySectionNoOrderByDueDate(secNo);
         //we are not checking for empty/ null assignments
@@ -68,12 +75,14 @@ public class AssignmentController {
     //TEST BODY {"title":"Assignment Post Test","dueDate":"2024-05-01","secId":1,"secNo":8}
     @PostMapping("/assignments")
     public AssignmentDTO createAssignment(
-        @RequestBody AssignmentDTO assignmentDTO) {
-
+        @RequestBody AssignmentDTO assignmentDTO, Principal principal) {
+        String instructorEmail = principal.getName();
         Section section = sectionRepository.findById(assignmentDTO.secNo()).orElse(null);
 
         if (section == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section not found. secNo: "+assignmentDTO.secNo());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section not found. secNo: " + assignmentDTO.secNo());
+        } else if (section.getInstructorEmail() == null || !section.getInstructorEmail().equals(instructorEmail)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
         }
 
         Date startDate = new Date(section.getTerm().getStartDate().getTime());
@@ -112,7 +121,8 @@ public class AssignmentController {
         //TEST URL http://localhost:8080/assignments
         //TEST BODY {"id": 2,"title": "db homework 1 Update","dueDate": "2024-04-04","courseId": "cst363","secId": 1,"secNo": 8}
         @PutMapping("/assignments")
-        public AssignmentDTO updateAssignment (@RequestBody AssignmentDTO dto){
+        public AssignmentDTO updateAssignment (@RequestBody AssignmentDTO dto, Principal principal) {
+            String instructorEmail = principal.getName();
             Assignment a = assignmentRepository.findById(dto.id()).orElse(null);
             if(a == null) {
                 throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "Assignment not found "+ dto.id());
@@ -121,6 +131,8 @@ public class AssignmentController {
 
                 if (section == null) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "section not found. secNo: "+dto.secNo());
+                } else if (section.getInstructorEmail() == null || !section.getInstructorEmail().equals(instructorEmail)) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
                 }
 
                 Date startDate = new Date(section.getTerm().getStartDate().getTime());
@@ -154,12 +166,17 @@ public class AssignmentController {
         // delete assignment for a section
         // logged in user must be instructor of the section
         @DeleteMapping("/assignments/{assignmentId}")
-        public void deleteAssignment ( @PathVariable("assignmentId") int assignmentId){
+        public void deleteAssignment ( @PathVariable("assignmentId") int assignmentId, Principal principal) {
+            String instructorEmail = principal.getName();
             Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
 
             List<Grade> grade = gradeRepository.findByAssignmentId(assignmentId);
 
             if (a != null) {
+                Section section = a.getSection();
+                if (section.getInstructorEmail() == null || !section.getInstructorEmail().equals(instructorEmail)) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
+                }
 
                 for (Grade g : grade) {
                     if (g.getScore() != null){
