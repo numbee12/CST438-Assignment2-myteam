@@ -59,7 +59,7 @@ public class StudentController {
                 new EnrollmentDTO(
                     e.getEnrollmentId(),
                     e.getGrade(),
-                    e.getStudent().getId(),  //we are calling get id here when it is a passed param
+                    e.getStudent().getId(),
                     e.getStudent().getName(),
                     e.getStudent().getEmail(),
                     e.getSection().getCourse().getCourseId(),

@@ -29,6 +29,10 @@ public class AssignmentController {
     private SectionRepository sectionRepository;
     @Autowired
     private GradeRepository gradeRepository;
+
+    @Autowired
+    private  UserRepository userRepository;
+
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
@@ -227,17 +231,18 @@ public class AssignmentController {
         @GetMapping("/assignments")
         @PreAuthorize("hasAuthority('SCOPE_ROLE_STUDENT')")
         public List<AssignmentStudentDTO> getStudentAssignments (
-                @RequestParam("studentId") int studentId,
+                Principal principal,
                 @RequestParam("year") int year,
                 @RequestParam("semester") String semester
-                //, Principal principal
                 ){
 
-            List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(studentId,year,semester);
+            User student = userRepository.findByEmail(principal.getName());
+
+            List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(student.getId(),year,semester);
 
             List<AssignmentStudentDTO> assignmentStudentDTO = new ArrayList<>();
             for(Assignment a: assignments){
-                Enrollment enrollment =enrollmentRepository.findEnrollmentBySectionNoAndStudentId(a.getSection().getSectionNo(), studentId);
+                Enrollment enrollment =enrollmentRepository.findEnrollmentBySectionNoAndStudentId(a.getSection().getSectionNo(), student.getId());
                 Grade grade = gradeRepository.findByEnrollmentIdAndAssignmentId(enrollment.getEnrollmentId(),a.getAssignmentId());
                 Integer score = null;
                 if(grade!= null){
