@@ -130,14 +130,18 @@ public class StudentController {
     @PreAuthorize("hasAuthority('SCOPE_ROLE_STUDENT')")
     public EnrollmentDTO addCourse(
 		    @PathVariable int sectionNo,
-            @RequestParam("studentId") int studentId ) {
+            Principal principal) {
+
+        User student = userRepository.findByEmail(principal.getName());
 
         //check that user exists
-        User u = userRepository.findById(studentId).orElse(null);
+        User u = userRepository.findById(student.getId()).orElse(null);
         if (u == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
         }
-
+        if (!u.getType().equals("STUDENT")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
+        }
         Section s = sectionRepository.findById(sectionNo).orElse(null);
         if (s == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "section No is not for a valid section");
@@ -159,7 +163,7 @@ public class StudentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "today is after the Add Deadline");
         }
         // check that student is not already enrolled into this section
-        Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, studentId);
+        Enrollment existing = enrollmentRepository.findEnrollmentBySectionNoAndStudentId(sectionNo, student.getId());
         if(existing != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "this student is already enrolled in this section");
         }
@@ -199,7 +203,7 @@ public class StudentController {
 
    @DeleteMapping("/enrollments/{enrollmentId}")
    @PreAuthorize("hasAuthority('SCOPE_ROLE_STUDENT')")
-   public void dropCourse(@PathVariable("enrollmentId") int enrollmentId) {
+   public void dropCourse(@PathVariable("enrollmentId") int enrollmentId, Principal principal) {
 
        //retrieve enrollment by Id
        Enrollment e = enrollmentRepository.findById(enrollmentId).orElse(null);
