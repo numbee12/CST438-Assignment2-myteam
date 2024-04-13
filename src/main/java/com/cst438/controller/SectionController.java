@@ -81,7 +81,7 @@ public class SectionController {
     }
 
     // ADMIN function to update a section
-    @PutMapping("/sections")
+    @PutMapping("/sections")e
     @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
     public void updateSection(@RequestBody SectionDTO section, Principal principal) {
 

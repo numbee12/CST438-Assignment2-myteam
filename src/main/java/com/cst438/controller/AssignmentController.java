@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -220,15 +221,17 @@ public class AssignmentController {
             }
         }
 
-        // SEE MASTER BRANCH - This was supposed to return an AssignmentStudentDTO, not an Assignment DTO.
         // student lists their assignments/grades for an enrollment ordered by due date
         // student must be enrolled in the section
         //TEST URL http://localhost:8080/assignments?studentId=3&year=2024&semester=Spring
         @GetMapping("/assignments")
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_STUDENT')")
         public List<AssignmentStudentDTO> getStudentAssignments (
                 @RequestParam("studentId") int studentId,
                 @RequestParam("year") int year,
-                @RequestParam("semester") String semester){
+                @RequestParam("semester") String semester
+                //, Principal principal
+                ){
 
             List<Assignment> assignments = assignmentRepository.findByStudentIdAndYearAndSemesterOrderByDueDate(studentId,year,semester);
 

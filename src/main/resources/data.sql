@@ -10,7 +10,7 @@ insert into term (term_id, tyear, semester, add_date, add_deadline, drop_deadlin
 insert into user_table (id, name, email, password, type) values
 (1, 'david wisneski', 'dwisneski@csumb.edu', '$2a$10$qrAAm2yK1zfP01Bcck0Ty.WkHqF8QyJ6MOHE5gM53p8Czv1ymz9Ia', 'INSTRUCTOR'),
 (2, 'joshua gross', 'jgross@csumb.edu', '', 'INSTRUCTOR'),
-(3, 'thomas edison', 'tedison@csumb.edu', '', 'STUDENT'),
+(3, 'thomas edison', 'tedison@csumb.edu', '$2a$10$NVM0n8ElaRgg7zWO1CxUdei7vWoPg91Lz2aYavh9.f9q0e4bRadue', 'STUDENT'),
 (4, 'fred brooks', 'fbrooks@csumb.edu', '', 'ADMIN'),
 (5, 'alexander bell', 'agbell@csumb.edu', '', 'STUDENT'),
 (6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
@@ -18,9 +18,6 @@ insert into user_table (id, name, email, password, type) values
 (8, 'alan turing', 'at@csumb.edu', '', 'STUDENT'),
 (9, 'user', 'user@csumb.edu', '$2a$10$NVM0n8ElaRgg7zWO1CxUdei7vWoPg91Lz2aYavh9.f9q0e4bRadue','STUDENT'),
 (10, 'admin', 'admin@csumb.edu', '$2a$10$8cjz47bjbR4Mn8GMg9IZx.vyjhLXR/SKKMSZ9.mP9vpMu0ssKi8GW' , 'ADMIN');
--- (6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
--- (7, 'albert einstein', 'ae@csumb.edu', '', 'STUDENT'),
--- (8, 'alan turing', 'at@csumb.edu', '', 'STUDENT'),
 
 
 insert into course values
@@ -55,10 +52,6 @@ insert into enrollment (enrollment_id, grade, section_no, user_id ) values
 (5, 'C', 8, 6),
 (6, 'A', 8, 7),
 (7, 'C', 8, 8);
--- (4,  null, 8, 3);
--- (5,  null, 8, 3);
--- (6,  null, 8, 3);
--- (7,  null, 8, 3);
 
 insert into assignment (assignment_id, section_no, title, due_date) values
 ( 1, 8, 'db homework 1', '2024-02-01'),
