@@ -31,18 +31,6 @@ public class EnrollmentController {
         List<Enrollment> enrollmentList = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(sectionNo);
         List<EnrollmentDTO> dto_list = new ArrayList<EnrollmentDTO>();
         for (Enrollment enrollment : enrollmentList) {
-
-            // FIXME:
-            // Below is the user validation code:
-            // Keeping it commented out for now until we figure out how to test it.
-
-            // User user = enrollment.getStudent();
-            // if (!user.getType().equals("INSTRUCTOR")) {
-            //     throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "user is not an instructor");
-            // } else if (!user.getEmail().equals(enrollment.getSection().getInstructorEmail())) {
-            //     throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "user is not the section instructor");
-            // }
-
             dto_list.add(new EnrollmentDTO(
                 enrollment.getEnrollmentId(),
                 enrollment.getGrade(),
@@ -78,17 +66,6 @@ public class EnrollmentController {
             if (e == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found " + eDTO.enrollmentId());
             }
-            // FIXME:
-            // Below is the user validation code:
-            // Keeping it commented out for now until we figure out how to test it.
-
-            // User user = e.getStudent();
-            // if (!user.getType().equals("INSTRUCTOR")) {
-            //     throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "user is not an instructor");
-            // } else if (!user.getEmail().equals(e.getSection().getInstructorEmail())) {
-            //     throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "user is not the section instructor");
-            // }
-
             e.setGrade(eDTO.grade());
             enrollmentRepository.save(e);
         }
