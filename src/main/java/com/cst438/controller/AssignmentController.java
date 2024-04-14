@@ -40,8 +40,8 @@ public class AssignmentController {
     // instructor lists assignments for a section.  Assignments ordered by due date.
     // logged in user must be the instructor for the section
     // TEST URL http://localhost:8080/sections/8/assignments
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
     @GetMapping("/sections/{secNo}/assignments")
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
     public List<AssignmentDTO> getAssignments(@PathVariable("secNo") int secNo, Principal principal)  {
         String instructorEmail = principal.getName();
         Section section = sectionRepository.findById(secNo).orElse(null);
@@ -74,6 +74,7 @@ public class AssignmentController {
     //TEST URL http://localhost:8080/assignments
     //TEST BODY {"title":"Assignment Post Test","dueDate":"2024-05-01","secId":1,"secNo":8}
     @PostMapping("/assignments")
+    @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
     public AssignmentDTO createAssignment(
         @RequestBody AssignmentDTO assignmentDTO, Principal principal) {
         String instructorEmail = principal.getName();
@@ -121,6 +122,7 @@ public class AssignmentController {
         //TEST URL http://localhost:8080/assignments
         //TEST BODY {"id": 2,"title": "db homework 1 Update","dueDate": "2024-04-04","courseId": "cst363","secId": 1,"secNo": 8}
         @PutMapping("/assignments")
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
         public AssignmentDTO updateAssignment (@RequestBody AssignmentDTO dto, Principal principal) {
             String instructorEmail = principal.getName();
             Assignment a = assignmentRepository.findById(dto.id()).orElse(null);
@@ -166,6 +168,7 @@ public class AssignmentController {
         // delete assignment for a section
         // logged in user must be instructor of the section
         @DeleteMapping("/assignments/{assignmentId}")
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
         public void deleteAssignment ( @PathVariable("assignmentId") int assignmentId, Principal principal) {
             String instructorEmail = principal.getName();
             Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
