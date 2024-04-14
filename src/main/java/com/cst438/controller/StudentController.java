@@ -51,6 +51,13 @@ public class StudentController {
 
        User student = userRepository.findByEmail(principal.getName());
 
+       if (student == null){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+       }
+       if (!student.getType().equals("STUDENT")){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "not authorized for this user");
+       }
+
        List<EnrollmentDTO> transcript = new ArrayList<EnrollmentDTO>();
        List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsByStudentIdOrderByTermId(student.getId());
 
@@ -89,6 +96,13 @@ public class StudentController {
        Principal principal) {
 
        User student = userRepository.findByEmail(principal.getName());
+
+       if (student == null){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
+       }
+       if (!student.getType().equals("STUDENT")){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "not authorized for this user");
+       }
 
        List<EnrollmentDTO> schedule = new ArrayList<>();
        List<Enrollment> enrollments = enrollmentRepository.findByYearAndSemesterOrderByCourseId(year, semester, student.getId());
@@ -140,7 +154,7 @@ public class StudentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user not found");
         }
         if (!u.getType().equals("STUDENT")){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is not a student");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "not authorized for this user");
         }
         Section s = sectionRepository.findById(sectionNo).orElse(null);
         if (s == null){
