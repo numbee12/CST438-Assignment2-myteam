@@ -191,7 +191,9 @@ public class AssignmentController {
         // instructor gets grades for assignment ordered by student name
         // user must be instructor for the section
         @GetMapping("/assignments/{assignmentId}/grades")
-        public List<GradeDTO> getAssignmentGrades ( @PathVariable("assignmentId") int assignmentId){
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_STUDENT')")
+        public List<GradeDTO> getAssignmentGrades ( @PathVariable("assignmentId") int assignmentId,
+                                                    Principal principal){
 
 //        int sectionNo = assignmentRepository.findSectionNoByAssignmentId(assignmentId);
             Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
@@ -230,7 +232,10 @@ public class AssignmentController {
         //TEST URL [{"gradeId":1,"studentName":"thomas edison", "studentEmail":"tedison@csumb.edu","assignmentTitle":"db homework 1","courseId":"cst363","sectionId":1,"score":88}]
 
         @PutMapping("/grades")
-        public void updateGrades (@RequestBody List <GradeDTO> dlist) {
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
+        public void updateGrades (
+                Principal principal,
+                @RequestBody List <GradeDTO> dlist) {
             for (GradeDTO dto : dlist) {
                 Grade g = gradeRepository.findById(dto.gradeId()).orElse(null);
                 if (g == null) {
