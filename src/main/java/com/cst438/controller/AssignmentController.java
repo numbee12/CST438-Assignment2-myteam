@@ -235,7 +235,7 @@ public class AssignmentController {
         //TEST URL [{"gradeId":1,"studentName":"thomas edison", "studentEmail":"tedison@csumb.edu","assignmentTitle":"db homework 1","courseId":"cst363","sectionId":1,"score":88}]
 
         @PutMapping("/grades")
-        @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
         public void updateGrades (
                 Principal principal,
                 @RequestBody List <GradeDTO> dlist) {
