@@ -194,15 +194,19 @@ public class AssignmentController {
         // instructor gets grades for assignment ordered by student name
         // user must be instructor for the section
         @GetMapping("/assignments/{assignmentId}/grades")
-        @PreAuthorize("hasAuthority('SCOPE_ROLE_STUDENT')")
+        @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
         public List<GradeDTO> getAssignmentGrades ( @PathVariable("assignmentId") int assignmentId,
                                                     Principal principal){
-
+            String instructorEmail = principal.getName();
 //        int sectionNo = assignmentRepository.findSectionNoByAssignmentId(assignmentId);
             Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
             if(a==null){
                 throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "not found");
             }
+            else if (Section.getInstructorEmail() == null || !Section.getInstructorEmail().equals(instructorEmail)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
+            }
+
 
             List<Enrollment> enrollments = enrollmentRepository.findEnrollmentsBySectionNoOrderByStudentName(a.getSection().getSectionNo());
             List<GradeDTO> assignmentGrades = new ArrayList<>();
