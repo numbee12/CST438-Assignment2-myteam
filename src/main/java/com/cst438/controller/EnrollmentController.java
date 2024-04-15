@@ -5,7 +5,6 @@ import com.cst438.domain.Enrollment;
 import com.cst438.domain.EnrollmentRepository;
 import com.cst438.domain.Section;
 import com.cst438.domain.SectionRepository;
-import com.cst438.domain.User;
 import com.cst438.domain.UserRepository;
 import com.cst438.dto.EnrollmentDTO;
 import java.security.Principal;
@@ -75,11 +74,6 @@ public class EnrollmentController {
     @PreAuthorize("hasAuthority('SCOPE_ROLE_INSTRUCTOR')")
     public void updateEnrollmentGrade(@RequestBody List<EnrollmentDTO> dlist, Principal principal) {
         String instructorEmail = principal.getName();
-        User instructor = userRepository.findByEmail(instructorEmail) ;
-
-        if (!instructor.getType().equals("INSTRUCTOR")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized User"+ instructorEmail);
-            }
 
         for (EnrollmentDTO eDTO : dlist) {
             Enrollment e = enrollmentRepository
@@ -87,6 +81,8 @@ public class EnrollmentController {
                             .orElse(null);
             if (e == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found " + eDTO.enrollmentId());
+            } else if (e.getSection().getInstructorEmail() == null || !e.getSection().getInstructorEmail().equals(instructorEmail)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
             }
             e.setGrade(eDTO.grade());
             enrollmentRepository.save(e);
