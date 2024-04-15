@@ -202,8 +202,7 @@ public class AssignmentController {
             Assignment a = assignmentRepository.findById(assignmentId).orElse(null);
             if(a==null){
                 throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "not found");
-            }
-            else if (Section.getInstructorEmail() == null || !Section.getInstructorEmail().equals(instructorEmail)) {
+            } else if (a.getSection().getInstructorEmail() == null || !a.getSection().getInstructorEmail().equals(instructorEmail)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
             }
 
@@ -243,10 +242,13 @@ public class AssignmentController {
         public void updateGrades (
                 Principal principal,
                 @RequestBody List <GradeDTO> dlist) {
+                    String instructorEmail = principal.getName();                 
             for (GradeDTO dto : dlist) {
                 Grade g = gradeRepository.findById(dto.gradeId()).orElse(null);
                 if (g == null) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "dto not found " + dto.courseId());
+                } else if (g.getAssignment().getSection().getInstructorEmail() == null || !g.getAssignment().getSection().getInstructorEmail().equals(instructorEmail)) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "unauthorized");
                 } else {
                     g.setScore(dto.score());
                     gradeRepository.save(g);
