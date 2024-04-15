@@ -4,13 +4,25 @@ insert into term (term_id, tyear, semester, add_date, add_deadline, drop_deadlin
 (7, 2023, 'Spring', '2022-11-01', '2023-01-30', '2023-01-30', '2023-01-15', '2023-05-17'),
 (8, 2023, 'Fall' ,  '2023-05-01', '2023-08-30', '2023-08-30', '2023-08-15', '2023-12-17'),
 (9, 2024, 'Spring', '2023-11-01', '2024-04-30', '2024-04-30', '2024-01-15', '2024-05-17'),
-(10, 2024, 'Fall',  '2024-05-01', '2024-08-30', '2024-08-30', '2024-08-15', '2024-12-17');
+(10, 2024, 'Fall',  '2024-05-01', '2024-08-30', '2024-08-30', '2024-08-15', '2024-12-17'),
+(11, 2024, 'Fall', '2024-01-01', '2024-12-31', '2024-12-31', '2024-04-01', '2024-11-01');
 
 insert into user_table (id, name, email, password, type) values
-(1, 'david wisneski', 'dwisneski@csumb.edu', '', 'INSTRUCTOR'),
+(1, 'david wisneski', 'dwisneski@csumb.edu', '$2a$10$qrAAm2yK1zfP01Bcck0Ty.WkHqF8QyJ6MOHE5gM53p8Czv1ymz9Ia', 'INSTRUCTOR'),
 (2, 'joshua gross', 'jgross@csumb.edu', '', 'INSTRUCTOR'),
-(3, 'thomas edison', 'tedison@csumb.edu', '', 'STUDENT'),
-(4, 'fred brooks', 'fbrooks@csumb.edu', '', 'ADMIN');
+(3, 'thomas edison', 'tedison@csumb.edu', '$2a$10$NVM0n8ElaRgg7zWO1CxUdei7vWoPg91Lz2aYavh9.f9q0e4bRadue', 'STUDENT'),
+(4, 'fred brooks', 'fbrooks@csumb.edu', '', 'ADMIN'),
+(5, 'alexander bell', 'agbell@csumb.edu', '', 'STUDENT'),
+(6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
+(7, 'albert einstein', 'ae@csumb.edu', '', 'STUDENT'),
+(8, 'alan turing', 'at@csumb.edu', '', 'STUDENT'),
+(9, 'user', 'user@csumb.edu', '$2a$10$NVM0n8ElaRgg7zWO1CxUdei7vWoPg91Lz2aYavh9.f9q0e4bRadue','STUDENT'),
+(10, 'admin', 'admin@csumb.edu', '$2a$10$8cjz47bjbR4Mn8GMg9IZx.vyjhLXR/SKKMSZ9.mP9vpMu0ssKi8GW' , 'ADMIN'),
+(11, 'teacher', 'teacher@csumb.edu', '$2a$10$iJF0FhLbZE6s28S8x6opX.880DeHmaMSqj6QfwkJvSQwyeq/e8WdS','INSTRUCTOR');
+-- (6, 'nickola tessla', 'nt@csumb.edu', '', 'STUDENT'),
+-- (7, 'albert einstein', 'ae@csumb.edu', '', 'STUDENT'),
+-- (8, 'alan turing', 'at@csumb.edu', '', 'STUDENT'),
+
 
 insert into course values
 ('cst238', 'Introduction to Programming', 5),
@@ -33,12 +45,17 @@ insert into section(section_no, course_id, sec_id, term_id, building, room, time
 (7, 'cst338', 2, 9, '052', '100', 'M W 10:00-11:50', 'jgross@csumb.edu'),
 (8, 'cst363', 1, 9, '052', '104', 'M W 10:00-11:50', 'dwisneski@csumb.edu'),
 (9, 'cst363', 2, 9, '052', '102', 'M W 2:00-3:50', 'dwisneski@csumb.edu'),
-(10, 'cst438', 1, 9, '052', '222', 'T Th 12:00-1:50', 'dwisneski@csumb.edu');
+(10, 'cst438', 1, 9, '052', '222', 'T Th 12:00-1:50', 'dwisneski@csumb.edu'),
+(11, 'cst438', 1, 9, '052', '222', 'T Th 12:00-1:50', 'dwisneski@csumb.edu');
 
 insert into enrollment (enrollment_id, grade, section_no, user_id ) values
 (1, 'A', 1, 3),
 (2, 'B', 8, 3),
-(3,  null, 10, 3);
+(3,  null, 10, 3),
+(4, 'C', 8, 5),
+(5, 'C', 8, 6),
+(6, 'A', 8, 7),
+(7, 'C', 8, 8);
 
 insert into assignment (assignment_id, section_no, title, due_date) values
 ( 1, 8, 'db homework 1', '2024-02-01'),
